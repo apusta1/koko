@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Matematika Koko Beruang</title>
+<style>
+    :root {
+        --bg: #fdf8f5;
+        --pc: #5d4037;
+        --ac: #ff9800;
+        --bd: #d7ccc8;
+        --mut: #795548;
+        --card-bg: #ffffff;
+    }
+    
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: #333;
+        margin: 0;
+        padding: 30px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 30px;
+        max-width: 800px;
+    }
+
+    h1 {
+        color: var(--pc);
+        margin: 5px 0;
+        font-size: 2rem;
+    }
+
+    .sub {
+        color: var(--mut);
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+
+    /* Grid Layout Diperbarui: Lebar ditambah jadi 1200px agar muat 4 baris */
+    .mission-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px; 
+    }
+
+    /* Styling Link & Card */
+    .card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        outline: none;
+    }
+
+    .card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        border: 2px solid var(--bd);
+        box-shadow: 0 4px 10px rgba(0,0,0,.05);
+        padding: 16px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-link:hover .card,
+    .card-link:focus .card {
+        transform: translateY(-6px);
+        border-color: var(--ac);
+        box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15);
+    }
+
+    /* Image Placeholder */
+    .ph {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+        height: 160px;
+        width: 100%;
+        border: 2px dashed #bcaaa4;
+        border-radius: 12px;
+        background: #f5efeb;
+        color: #8d6e63;
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+        transition: background 0.2s ease;
+    }
+
+    .card-link:hover .ph {
+        background: #fff3e0;
+        border-color: var(--ac);
+    }
+
+    .ph b {
+        font-size: 3.5rem;
+        line-height: 1;
+        filter: drop-shadow(2px 4px 4px rgba(0,0,0,.1));
+    }
+
+    /* Badge Topik Matematika */
+    .topic-badge {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Teks dalam Kartu */
+    .card h2 {
+        color: var(--pc);
+        margin: 0 0 10px 0;
+        font-size: 1.25rem;
+    }
+
+    .card p {
+        color: var(--mut);
+        font-size: 0.85rem;
+        margin: 0;
+        line-height: 1.5;
+        flex-grow: 1;
+    }
+
+    /* Tombol Mulai Semu */
+    .btn-start {
+        margin-top: 16px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 24px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        width: 100%;
+        transition: background 0.2s;
+    }
+
+    .card-link:hover .btn-start {
+        background: #388e3c;
+    }
+
+    /* Animasi masuk */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    .card-link {
+        animation: fadeInUp 0.5s ease backwards;
+    }
+    
+    .card-link:nth-child(1) { animation-delay: 0.1s; }
+    .card-link:nth-child(2) { animation-delay: 0.2s; }
+    .card-link:nth-child(3) { animation-delay: 0.3s; }
+    .card-link:nth-child(4) { animation-delay: 0.4s; }
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Petualangan Matematika Koko Beruang 🐻</h1>
+    <div class="sub">Pilih misi belajarmu hari ini! Eksplorasi konsep matematika dengan cara yang seru dan interaktif.</div>
+</header>
+
+<div class="mission-grid">
+    
+    <!-- Misi 1: Kotak Kue Koko -->
+    <a href="kotak-kue-koko.html" class="card-link" aria-label="Buka Kotak Kue Koko">
+        <div class="card">
+            <div class="ph">
+                <b>🍪</b>
+                <span>Cover Kotak Kue</span>
+            </div>
+            <span class="topic-badge" style="background:#e3f2fd; color:#1565c0; border-color:#90caf9;">Perkalian Dasar</span>
+            <h2>Kotak Kue Koko</h2>
+            <p>Eksplorasi konsep perkalian sebagai penjumlahan berulang dengan menyusun kue-kue.</p>
+            <div class="btn-start">Mulai Misi ▶</div>
+        </div>
+    </a>
+
+    <!-- Misi 2: Kebun Apel Koko -->
+    <a href="misi-apel-koko.html" class="card-link" aria-label="Buka Misi Kebun Apel Koko">
+        <div class="card">
+            <div class="ph">
+                <b>🍎</b>
+                <span>Cover Kebun Apel</span>
+            </div>
+            <span class="topic-badge" style="background:#fce4ec; color:#c2185b; border-color:#f48fb1;">Perkalian Benda</span>
+            <h2>Misi Kebun Apel</h2>
+            <p>Bantu Koko menyusun apel ke dalam keranjang dengan kelompok yang sama banyak.</p>
+            <div class="btn-start">Mulai Misi ▶</div>
+        </div>
+    </a>
+
+    <!-- Misi 3: Madu Koko -->
+    <a href="misi-madu-koko.html" class="card-link" aria-label="Buka Misi Madu Koko">
+        <div class="card">
+            <div class="ph">
+                <b>🍯</b>
+                <span>Cover Madu Koko</span>
+            </div>
+            <span class="topic-badge" style="background:#fff3e0; color:#e65100; border-color:#ffcc80;">Penjumlahan</span>
+            <h2>Misi Madu Koko</h2>
+            <p>Eksplorasi konsep penjumlahan sebagai penggabungan dari dua kumpulan toples madu.</p>
+            <div class="btn-start">Mulai Misi ▶</div>
+        </div>
+    </a>
+
+    <!-- Misi 4: Selisih Coklat Koko -->
+    <a href="selisih-coklat-koko.html" class="card-link" aria-label="Buka Selisih Coklat Koko">
+        <div class="card">
+            <div class="ph">
+                <b>🍫</b>
+                <span>Cover Selisih Coklat</span>
+            </div>
+            <span class="topic-badge" style="background:#f3e5f5; color:#7b1fa2; border-color:#ce93d8;">Pengurangan</span>
+            <h2>Selisih Coklat Koko</h2>
+            <p>Pahami pengurangan dengan cara mencari selisih jumlah coklat Koko dan Bona.</p>
+            <div class="btn-start">Mulai Misi ▶</div>
+        </div>
+    </a>
+
+</div>
+
+</body>
+</html>
