@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual Manipulative: Selisih Coklat Koko (Pengurangan sebagai Selisih)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fdf8f5;--card:#fff;--text:#333;--pri:#5d4037;--acc:#ff9800;--bd:#d7ccc8;--mut:#795548;--tc:#6a4c93;--ts:#f1eaf9;--tb:#d9c8ea;--chip:#efebe9;--w:7px;--h:56px}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1814;--card:#2b211c;--text:#efe6e1;--pri:#e8d5cc;--bd:#5a4740;--mut:#c9b2a6;--ts:#2f2540;--tb:#54426b;--tc:#d2b8f0;--chip:#3a2d27}}
+:root[data-theme="dark"]{--bg:#1f1814;--card:#2b211c;--text:#efe6e1;--pri:#e8d5cc;--bd:#5a4740;--mut:#c9b2a6;--ts:#2f2540;--tb:#54426b;--tc:#d2b8f0;--chip:#3a2d27}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:15px;display:flex;flex-direction:column;align-items:center}
+header{text-align:center;margin-bottom:12px}
+h1{color:var(--pri);margin:5px 0;font-size:1.6rem}h2{color:var(--pri)}h3{color:var(--pri)}
+.subtitle{color:var(--mut);font-size:.95rem}
+.btn-t{background:var(--ts);border:1px solid var(--tb);color:var(--tc);border-radius:20px;padding:7px 14px;font-size:.85rem;font-weight:bold;cursor:pointer;margin-top:8px}
+.scrim{position:fixed;inset:0;background:rgba(40,25,10,.45);opacity:0;visibility:hidden;transition:.25s;z-index:1000}.scrim.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);background:var(--card);z-index:1001;transform:translateX(100%);transition:transform .3s;box-shadow:-12px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column}.drawer.open{transform:none}
+.dh{background:#6a4c93;color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center}.dh h2{margin:0;font-size:1.1rem;color:#fff}
+.dx{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer}
+.db{padding:16px 18px;overflow-y:auto;flex:1}.ts h3{font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--tc);margin:14px 0 8px}
+.tb{background:var(--ts);border:1px solid var(--tb);border-radius:10px;padding:12px 14px;font-size:.9rem;line-height:1.55}.tb ul{margin:8px 0 0;padding-left:20px}
+.tq{background:var(--card);border-left:4px solid #6a4c93;border-radius:8px;padding:8px 10px;margin-top:10px;font-size:.88rem}
+.tm span{display:inline-block;background:var(--card);border:1px solid var(--tb);border-radius:16px;padding:3px 10px;margin:6px 6px 0 0;font-size:.78rem;font-weight:bold;color:var(--tc)}
+.stepper{display:flex;width:100%;max-width:700px;margin:0 auto 22px}
+.si{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;cursor:pointer;isolation:isolate}
+.si:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:4px;background:var(--bd);z-index:-1}
+.si.completed:not(:last-child)::after{background:var(--pri)}
+.sc{width:32px;height:32px;border-radius:50%;background:var(--chip);border:2px solid var(--bd);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:bold;margin-bottom:6px;transition:.3s}
+.sn{font-size:.72rem;font-weight:600;color:var(--mut)}
+.si.active .sc,.si.completed .sc{background:var(--pri);border-color:var(--pri);color:var(--card)}.si.active .sc{transform:scale(1.15)}.si.active .sn{color:var(--pri);font-weight:bold}
+.card{background:var(--card);border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.05);width:100%;max-width:800px;padding:20px;border:1px solid var(--bd)}
+.step{display:none}.step.active{display:block;animation:up .4s}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.rb{background:#e8f5e9;color:#1b3a1f;padding:12px;border-radius:8px;margin:10px 0;border-left:4px solid #4caf50}.rb.o{background:#fff3e0;border-left-color:#ff9800;color:#4a2c00}
+.qi{display:none;cursor:pointer}.qi.show{display:block;animation:up .4s}
+.qi .ans{display:none;margin-top:8px}.qi .ans.show{display:block;animation:up .35s}
+.qi.show:not(.answered)::after{content:"👉 Klik untuk lihat jawaban";display:block;margin-top:8px;font-size:.78rem;color:#e65100;font-weight:bold}
+.qi.answered:not(.opened):not(.last)::after{content:"👉 Klik untuk pertanyaan berikutnya";display:block;margin-top:8px;font-size:.78rem;color:#e65100;font-weight:bold}
+.seq{display:none;cursor:pointer}.seq.show{display:block;animation:up .4s}
+.seq.show:not(.opened):not(.last)::after{content:"👉 Klik untuk lanjut";display:block;margin-top:8px;font-size:.78rem;color:#e65100;font-weight:bold}
+.stage{background:var(--chip);border-radius:12px;padding:14px;margin:12px 0;text-align:center}.cap{font-size:.85rem;color:var(--pri);margin-top:6px;font-weight:600}
+.locked{opacity:.45;cursor:not-allowed}.lifting{opacity:.3}.ghost{position:fixed!important;z-index:3000;pointer-events:none;transform:scale(1.15)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:flex-start;margin-top:12px}
+table.pv{border-collapse:collapse;margin:8px auto;text-align:center}.pv th,.pv td{border:2px solid var(--bd);padding:6px 14px;font-size:1rem}.pv th{background:var(--chip);color:var(--pri)}.pv td b{font-size:1.5rem}
+.st{background:#fff3e0;color:#4a2c00;border-left:4px solid #ff9800;border-radius:8px;padding:10px 12px;margin:10px auto;max-width:520px;line-height:1.5}
+.ask{text-align:center;margin:8px 0}.btn,.nb{border:none;border-radius:6px;padding:8px 16px;font-weight:bold;cursor:pointer;color:#fff;background:#4caf50;margin:3px}.btn:hover{background:#388e3c}
+.nb{background:var(--pri);color:var(--card);border-radius:24px;padding:9px 18px;margin:0}
+.nav{display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid var(--bd)}.nav.r{justify-content:flex-end}.nav.l{justify-content:flex-start}
+.hide{display:none!important}.banner{text-align:center;background:#ffd54f;color:#4e342e;font-weight:bold;border-radius:10px;padding:12px;margin-top:12px;line-height:1.6;animation:up .5s}
+.tile,.slot{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;padding:0 10px;border-radius:10px;font-size:1.3rem;font-weight:bold;margin:0 3px;vertical-align:middle}
+.tile{background:#fff;color:#5d4037;border:2px solid var(--acc);cursor:grab;user-select:none;touch-action:none;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.slot{border:2px dashed #ab9086;background:var(--chip);color:var(--pri)}.slot.filled{border:2px solid #4caf50;background:#e8f5e9;color:#2e7d32}.slot.bad{border-color:#e53935;background:#ffebee;animation:sk .4s}@keyframes sk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.eq{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px;margin:12px 0}.eq .slot{min-width:56px;height:56px;font-size:1.7rem}
+.bank{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0;padding:10px;background:var(--chip);border-radius:10px}
+.level-feedback{display:none;text-align:center;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;border-left:4px solid #4caf50;border-radius:8px;padding:10px 16px;font-weight:bold;max-width:480px;margin:6px auto}.level-feedback.show{display:block;animation:up .4s}
+.q{display:none;border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-bottom:14px}.q.show{display:block;animation:up .4s}
+.opts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.opt{background:#fff;color:#5d4037;border:2px solid var(--bd);border-radius:8px;padding:8px 22px;font-size:1.1rem;font-weight:bold;cursor:pointer}.opt:disabled{cursor:default}
+.opt.ok{background:#c8e6c9;border-color:#4caf50;color:#2e7d32}.opt.no{background:#ffcdd2;border-color:#e53935;color:#b71c1c}
+.qf{display:none;margin-top:10px;padding:8px 12px;border-radius:8px;font-weight:bold}.qf.show{display:block;animation:up .3s}.qf.g{background:#e8f5e9;color:#2e7d32}.qf.w{background:#fff3e0;color:#e65100}
+.cel{display:none;text-align:center;padding:20px;background:#fff8e1;color:#4e342e;border-radius:10px;border:2px solid #ffe082;margin-top:15px}.cel.show{display:block;animation:up .5s}
+.confetti{position:fixed;top:-30px;font-size:24px;pointer-events:none;z-index:2000;animation:fall 3s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@media(max-width:500px){.sn{font-size:.62rem}.sc{width:28px;height:28px}.si:not(:last-child)::after{top:12px}}
+.cg{--n:12;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:5px;max-width:480px;margin:0 auto;align-items:end}
+.gl{grid-column:1/-1;text-align:left;font-weight:bold;color:var(--pri);font-size:.9rem;margin-top:6px}
+.cb{width:100%;max-width:34px;aspect-ratio:2/3;justify-self:center;border-radius:5px;border:2px solid #3e2723;background:linear-gradient(90deg,transparent 48%,#3e2723 48% 52%,transparent 52%),linear-gradient(0deg,transparent 31%,#3e2723 31% 35%,transparent 35% 64%,#3e2723 64% 68%,transparent 68%),linear-gradient(145deg,#8d5b4c,#5d4037);transition:.3s}
+.em{aspect-ratio:2/3;max-width:34px;width:100%;justify-self:center;border:2px dashed var(--bd);border-radius:5px}
+.cb.pd{opacity:.4;outline:3px solid #4caf50}.cb.nw{outline:3px dotted #ff9800}
+.cb.ex{border-color:#ff9800;animation:pg .7s infinite}@keyframes pg{50%{box-shadow:0 0 14px 6px rgba(255,152,0,.85)}}
+.cb.tp{cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+<h1>Selisih Coklat Koko 🐻🍫</h1>
+<div class="subtitle">Pengurangan sebagai Selisih: Membandingkan Dua Kumpulan Batangan Coklat</div>
+<button class="btn-t" id="open-teacher">👩‍🏫 Panduan Guru</button>
+</header>
+
+<div class="stepper">
+<div class="si active" onclick="go(1)"><div class="sc">1</div><div class="sn">Masalah</div></div>
+<div class="si" onclick="go(2)"><div class="sc">2</div><div class="sn">Petunjuk</div></div>
+<div class="si" onclick="go(3)"><div class="sc">3</div><div class="sn">Konsep</div></div>
+<div class="si" onclick="go(4)"><div class="sc">4</div><div class="sn">Simulasi</div></div>
+<div class="si" onclick="go(5)"><div class="sc">5</div><div class="sn">Refleksi</div></div>
+<div class="si" onclick="go(6)"><div class="sc">6</div><div class="sn">Latihan</div></div>
+</div>
+
+<div class="card">
+
+<section id="step-1" class="step active">
+<h2>1: Memahami Masalah Koko</h2>
+<p>Koko Beruang dan Bona si Tupai sama-sama suka coklat. Koko punya <strong>12 batang coklat</strong>. Bona punya <strong>7 batang coklat</strong>. Bona ingin tahu: <strong>“Siapa yang punya lebih banyak? Lebih banyak berapa batang?”</strong></p>
+<div class="stage"><div class="cg" data-k="12" data-b="7"></div><div class="cap">Koko: 12 batang &nbsp;|&nbsp; Bona: 7 batang</div></div>
+<div class="qg" id="qa1">
+<div class="rb qi"><div><strong>Pertanyaan:</strong> Berapa batang coklat Koko?</div><div class="ans"><em>Jawab: 12 batang coklat.</em></div></div>
+<div class="rb qi"><div><strong>Pertanyaan:</strong> Berapa batang coklat Bona?</div><div class="ans"><em>Jawab: 7 batang coklat.</em></div></div>
+<div class="rb qi"><div><strong>Pertanyaan:</strong> Siapa yang punya coklat lebih banyak?</div><div class="ans"><em>Jawab: Koko. Coklat Koko lebih banyak daripada coklat Bona.</em></div></div>
+<div class="rb qi"><div><strong>Pertanyaan:</strong> Bona ingin tahu “lebih banyak berapa batang”. Beda banyaknya itu disebut apa?</div><div class="ans"><em>Jawab: <b>Selisih</b>. Selisih adalah beda banyaknya dua kumpulan.</em></div></div>
+</div>
+<div class="nav r"><button class="nb" onclick="go(2)">Lanjut →</button></div>
+</section>
+
+<section id="step-2" class="step">
+<h2>2: Mencari Petunjuk</h2>
+<div class="qg" id="qa2">
+<div class="rb qi"><div><strong>Guru Burhan 🦉:</strong> Kalau setiap batang Bona dipasangkan dengan 1 batang Koko, ada berapa pasang?</div><div class="ans"><em>Jawab: 7 pasang, karena Bona punya 7 batang.</em></div></div>
+<div class="rb qi"><div><strong>Guru Burhan 🦉:</strong> Setelah semua batang Bona berpasangan, apakah masih ada batang Koko tanpa pasangan?</div><div class="ans"><em>Jawab: Ya, masih ada. Karena Koko punya lebih banyak.</em></div></div>
+<div class="rb qi"><div><strong>Guru Burhan 🦉:</strong> Batang Koko yang tidak punya pasangan itulah yang disebut… <span style="color:#6a4c93">(Jawab bersama-sama!)</span></div><div class="ans"><strong>Selisih! Itulah lebihnya coklat Koko.</strong></div></div>
+</div>
+<h3 style="margin-top:20px">Lengkapi Kalimat Perbandingan</h3>
+<p>Seret kartu ke kotak yang tepat.</p>
+<div id="pv2">
+<p style="line-height:2.7;text-align:center">Koko punya <span class="slot" data-expect="12"></span> batang. Bona punya <span class="slot" data-expect="7"></span> batang. Yang punya coklat lebih banyak adalah <span class="slot" data-expect="Koko"></span>.</p>
+<div class="bank"><span class="tile">Bona</span><span class="tile">7</span><span class="tile">Koko</span><span class="tile">12</span></div>
+<div class="level-feedback"></div>
+</div>
+<div class="nav"><button class="nb" onclick="go(1)">← Sebelumnya</button><button class="nb" onclick="go(3)">Lanjut →</button></div>
+</section>
+
+<section id="step-3" class="step">
+<h2>3: Belajar Mencari Selisih</h2>
+<div id="s3seq">
+<div class="rb seq"><div>🦉 “Anak-anak, untuk mencari <strong>selisih</strong>, kita <strong>pasangkan</strong> batang coklat satu-satu. Batang yang <strong>tidak punya pasangan</strong> adalah selisihnya.”</div></div>
+<div class="rb o seq"><strong>Selisih = beda banyaknya dua kumpulan.</strong><br>Kita mencarinya dengan pengurangan: yang lebih banyak dikurangi yang lebih sedikit. Tidak ada coklat yang diambil atau dimakan. Kita hanya <strong>membandingkan</strong>.</div>
+</div>
+<h3 style="margin-top:18px">Lihat caranya, langkah demi langkah</h3>
+<div class="stage"><div class="cg" id="cmp"></div></div>
+<div class="st" id="cmpc" style="text-align:center"></div>
+<div style="text-align:center"><button class="btn" id="cmpb" onclick="cmpNext()"></button></div>
+<h3 style="margin-top:20px">Susun persamaannya!</h3>
+<div id="eq3">
+<div class="eq"><span class="slot" data-expect="12"></span><span class="slot" data-expect="−"></span><span class="slot" data-expect="7"></span><span class="slot" data-expect="="></span><span class="slot" data-expect="?"></span></div>
+<div class="bank"><span class="tile">7</span><span class="tile">=</span><span class="tile">12</span><span class="tile">?</span><span class="tile">−</span><span class="tile">+</span></div>
+<div class="level-feedback"></div>
+</div>
+<div class="nav"><button class="nb" onclick="go(2)">← Sebelumnya</button><button class="nb" onclick="go(4)">Lanjut →</button></div>
+</section>
+
+<section id="step-4" class="step">
+<h2>4: Simulasi — Bantu Bona!</h2>
+<div class="rb o"><strong>Cari selisih coklat Koko dan Bona.</strong> Ketuk batang coklat Koko satu per satu untuk memasangkannya dengan batang coklat Bona.</div>
+<div style="text-align:center"><button class="btn" style="background:#8d6e63" onclick="buildSim()">↺ Ulangi</button></div>
+<div id="sim"></div>
+<div class="nav"><button class="nb" onclick="go(3)">← Sebelumnya</button><button class="nb" onclick="go(5)">Lanjut →</button></div>
+</section>
+
+<section id="step-5" class="step">
+<h2>5: Refleksi</h2>
+<p>Dua cara melihat selisih yang sama:</p>
+<div class="row">
+<div class="stage" style="flex:1 1 270px"><div class="cg" data-k="12" data-b="7" data-s="2"></div><div class="cap">Koko lebih banyak 5 batang<br>12 − 7 = 5</div></div>
+<div class="stage" style="flex:1 1 270px"><div class="cg" data-k="12" data-b="7" data-s="1" data-a="1"></div><div class="cap">Bona ditambah 5 batang, jadi sama banyak<br>7 + 5 = 12</div></div>
+</div>
+<div class="qg" id="qa5">
+<div class="rb qi"><div><strong>Guru:</strong> Siapa yang punya coklat lebih banyak, dan lebih banyak berapa batang?</div><div class="ans"><em>Jawab: Koko lebih banyak 5 batang. Bona lebih sedikit 5 batang.</em></div></div>
+<div class="rb qi"><div><strong>Guru:</strong> Supaya coklat Bona sama banyak dengan Koko, Bona perlu tambah berapa batang?</div><div class="ans"><em>Jawab: 5 batang. Angka itu juga selisihnya, karena 7 + 5 = 12.</em></div></div>
+<div class="rb qi"><div><strong>Guru:</strong> Waktu kita mencari selisih, apakah ada coklat yang diambil atau dimakan?</div><div class="ans"><em>Jawab: Tidak. Kita hanya membandingkan. Coklat Koko tetap 12 dan coklat Bona tetap 7.</em></div></div>
+<div class="rb o qi"><div><strong>Tantangan 1:</strong> Sari punya 8 batang coklat, Tono punya 11 batang. Siapa yang lebih banyak? Berapa selisihnya?</div><div class="ans"><em>Jawab: Tono lebih banyak. Pasangkan 8 batang Sari, sisa 3 batang Tono. 11 − 8 = 3.</em></div></div>
+<div class="rb o qi"><div><strong>Tantangan 2:</strong> Koko memakan 2 batang coklatnya. Sekarang berapa selisih coklat Koko dan Bona?</div><div class="ans"><em>Jawab: Koko tinggal 10 batang. 10 − 7 = 3. Selisihnya menjadi lebih kecil, dari 5 menjadi 3.</em></div></div>
+</div>
+<div class="nav"><button class="nb" onclick="go(4)">← Sebelumnya</button><button class="nb" onclick="go(6)">Lanjut →</button></div>
+</section>
+
+<section id="step-6" class="step">
+<h2>6: Latihan Mandiri</h2>
+<div class="q show" id="lat1">
+<div><strong>Latihan 1:</strong> Koko punya 15 batang coklat, Bona punya 9 batang. Lengkapi langkahnya!</div>
+<div class="stage"><div class="cg" data-k="15" data-b="9" data-s="1"></div></div>
+<div id="lat1t">
+<p style="line-height:2.7">Pasangkan 9 batang Bona dengan <span class="slot" data-expect="9"></span> batang Koko. Batang Koko yang tidak punya pasangan ada <span class="slot" data-expect="6"></span> batang. Itulah selisihnya. Jadi 15 − 9 = <span class="slot" data-expect="6"></span>.</p>
+<div class="bank"><span class="tile">9</span><span class="tile">6</span><span class="tile">15</span><span class="tile">7</span><span class="tile">5</span></div>
+<div class="level-feedback"></div>
+</div>
+</div>
+<div class="q" id="lat2">
+<div><strong>Latihan 2:</strong> Dina punya 16 batang coklat dan Eko punya 9 batang. Berapa selisih coklat Dina dan Eko?</div>
+<div class="opts">
+<button class="opt" data-f="Kamu menjumlahkan 16 + 9. Selisih berarti mencari beda banyaknya, jadi 16 − 9.">25</button>
+<button class="opt" data-ok="1">7</button>
+<button class="opt" data-f="Kamu ikut menghitung angka 9 (9, 10, …, 16 ada 8 angka). Hitung hanya batang yang tidak punya pasangan: 16 − 9.">8</button>
+</div>
+<div class="qf" id="lat2f"></div>
+</div>
+<div class="cel" id="cel"><div style="font-size:3rem">🐻🍫🐿️</div><h3 style="color:#d84315;margin:8px 0">KERJA BAGUS!</h3><p><strong>Kalian sudah ahli mencari selisih!</strong></p><p style="font-size:1.2rem">⭐ TAMAT (SELESAI) ⭐</p></div>
+<div class="nav l"><button class="nb" onclick="go(5)">← Sebelumnya</button></div>
+</section>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeT()"></div>
+<aside class="drawer" id="drawer" aria-label="Panduan Guru">
+<div class="dh"><h2>👩‍🏫 Panduan Guru</h2><button class="dx" onclick="closeT()" aria-label="Tutup">✕</button></div>
+<div class="db">
+<div class="ts"><h3>Capaian Pembelajaran</h3><div class="tb">Peserta didik menyelesaikan masalah pengurangan dengan benda konkret dan gambar, termasuk membandingkan dua kumpulan untuk menemukan selisihnya, serta menjelaskan caranya.<div class="tm"><span>Matematika</span><span>Operasi Bilangan</span><span>Fase A (Kelas 1–2)</span></div></div></div>
+<div class="ts"><h3>Luaran Pembelajaran</h3><div class="tb">Siswa memasangkan dua kumpulan benda satu-satu, menemukan selisihnya, dan menuliskannya sebagai pengurangan.<div class="tq"><b style="color:#388e3c">“Aku pasangkan batang Bona dengan batang Koko. Ada 7 pasang. Batang Koko yang tidak punya pasangan ada 5. Jadi selisihnya 5, dan 12 kurang 7 sama dengan 5.”</b></div></div></div>
+<div class="ts"><h3>Catatan Tahap Ini</h3><div id="tnote"></div></div>
+<div class="ts"><h3>Miskonsepsi yang Sering Muncul</h3><div class="tb"><ul><li><b>Menjumlahkan:</b> “selisih 12 dan 7” dijawab 19. Tekankan: selisih adalah beda banyaknya, bukan gabungan.</li><li><b>Ikut menghitung angka batas:</b> 12 − 7 dijawab 6 atau 6 ditambah 1, karena menghitung 7, 8, …, 12. Arahkan menghitung batang yang tidak berpasangan.</li><li><b>Mengira ada yang diambil:</b> siswa mencari batang yang “hilang”. Tunjukkan bahwa kedua kumpulan tetap utuh.</li><li><b>Membalik pengurangan:</b> menulis 7 − 12. Yang lebih banyak ditulis lebih dulu.</li></ul></div></div>
+</div></aside>
+
+<script>
+const $=id=>document.getElementById(id);
+function go(n){
+ document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));$('step-'+n).classList.add('active');
+ document.querySelectorAll('.si').forEach((e,i)=>{e.classList.remove('active','completed');if(i+1<n)e.classList.add('completed');else if(i+1===n)e.classList.add('active')});
+ $('tnote').innerHTML=NOTES[n];window.scrollTo({top:0,behavior:'smooth'});
+}
+const NOTES={
+1:`<div class="tb">Fase <b>konteks</b>. Tunjukkan dua barisan coklat, lalu klik pertanyaan satu per satu. Pastikan siswa memahami kata “lebih banyak” dan “selisih”.<div class="tq"><b>Tanya:</b> “Pernahkah kalian membandingkan jajan dengan teman? Siapa yang lebih banyak?”</div></div>`,
+2:`<div class="tb">Fase <b>piktorial</b>. Gunakan pemasangan satu-satu dengan benda nyata (misalnya penghapus atau kelereng) sebelum memakai layar.<ul><li>Minta jawaban kompak untuk “batang tanpa pasangan disebut apa?”.</li></ul></div>`,
+3:`<div class="tb">Fase <b>simbolik</b>. Klik tombol untuk memperlihatkan pemasangan, batang tanpa pasangan, lalu tulisan 12 − 7 = 5.<div class="tq"><b>Tanya:</b> “Mengapa ditulis pengurangan padahal tidak ada coklat yang dimakan?” <b style="color:#388e3c">→ karena kita mencari beda banyaknya.</b></div></div>`,
+4:`<div class="tb">Fase <b>konkret</b> (virtual manipulative). Alurnya: (1) ketuk batang Koko untuk dipasangkan dengan batang Bona, (2) hentikan saat batang Bona habis, (3) hitung batang Koko yang bercahaya.<ul><li>Setelah selesai, minta siswa bercerita ke teman sebangku tanpa melihat layar.</li></ul></div>`,
+5:`<div class="tb">Bandingkan dua cara: 12 − 7 = 5 dan 7 + 5 = 12. Tantangan 2 menunjukkan selisih berubah ketika salah satu kumpulan berubah.<ul><li>Dorong siswa menjelaskan alasannya, bukan hanya hasilnya.</li></ul><div class="tq"><b>Pengayaan (kelas 2):</b> “Bagaimana dengan 45 batang dan 38 batang?”</div></div>`,
+6:`<div class="tb">Latihan individu. Pilihan jawaban salah pada Latihan 2 sengaja mewakili miskonsepsi (25 = menjumlahkan; 8 = ikut menghitung angka batas). Bahas alasan kesalahannya bersama.</div>`};
+function openT(){$('scrim').classList.add('open');$('drawer').classList.add('open')}
+function closeT(){$('scrim').classList.remove('open');$('drawer').classList.remove('open')}
+$('open-teacher').onclick=openT;
+
+/* audio & efek */
+function beep(){try{const c=new AudioContext();[523,659,784,1047].forEach((f,i)=>{const t=c.currentTime+i*.15,o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)})}catch(e){}}
+function confetti(){for(let i=0;i<40;i++){const s=document.createElement('span');s.className='confetti';s.textContent=['🎉','✨','🎈','⭐'][i%4];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*1.5+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),5000)}}
+
+/* mesin seret (pointer: mouse, sentuh, papan interaktif) */
+function dragify(el,targets,onDrop){
+ el.addEventListener('pointerdown',e=>{
+  if(el.classList.contains('locked')||el.dataset.done)return;
+  e.preventDefault();
+  const r=el.getBoundingClientRect(),g=el.cloneNode(true);
+  g.classList.add('ghost');g.style.width=r.width+'px';g.style.height=r.height+'px';
+  const mv=ev=>{g.style.left=ev.clientX-r.width/2+'px';g.style.top=ev.clientY-r.height/2+'px'};
+  mv(e);document.body.appendChild(g);el.classList.add('lifting');
+  const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);g.remove();el.classList.remove('lifting');
+   const hit=document.elementFromPoint(ev.clientX,ev.clientY),t=hit&&targets().find(z=>z.contains(hit));if(t)onDrop(el,t)};
+  addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
+ });
+}
+function setupTiles(id,msg,after){
+ const root=$(id),slots=[...root.querySelectorAll('.slot')],fb=root.querySelector('.level-feedback');
+ root.querySelectorAll('.tile').forEach(t=>dragify(t,()=>slots.filter(s=>!s.classList.contains('filled')),(el,s)=>{
+  if(el.textContent.trim()===s.dataset.expect){s.textContent=s.dataset.expect;s.classList.add('filled');
+   if(slots.every(x=>x.classList.contains('filled'))){fb.innerHTML=msg;fb.classList.add('show');if(after)after()}}
+  else{s.classList.add('bad');setTimeout(()=>s.classList.remove('bad'),500)}}));
+}
+
+/* barisan coklat: st 0 polos, 1 berpasangan, 2 berpasangan + sisa; add = Bona ditambah */
+const cb=c=>`<div class="cb ${c||''}"></div>`;
+function cmpGrid(k,b,st,add){
+ let h=`<div class="gl">🐻 Koko: ${k}</div>`;
+ for(let i=0;i<k;i++)h+=cb(i<b?(st?'pd':''):(st>1?'ex':''));
+ h+=`<div class="gl">🐿️ Bona: ${add?k:b}</div>`;
+ for(let i=0;i<k;i++)h+=i<b?cb(st?'pd':''):add?cb('nw'):'<div class="em"></div>';
+ return h}
+document.querySelectorAll('.cg[data-k]').forEach(e=>{e.style.setProperty('--n',e.dataset.k);e.innerHTML=cmpGrid(+e.dataset.k,+e.dataset.b,+e.dataset.s||0,+e.dataset.a)});
+
+/* Langkah 3: pasangkan, cari sisa, tulis */
+let cs=0;
+const CB=['🔗 Pasangkan batangnya','🔎 Cari yang tanpa pasangan','✍️ Tulis pengurangannya','↺ Ulangi'];
+const CC=['Koko punya <b>12</b> batang, Bona punya <b>7</b> batang. Siapa yang lebih banyak?','Setiap batang Bona dipasangkan dengan 1 batang Koko. Ada <b>7 pasang</b>.','Batang Koko yang <b>tidak punya pasangan</b> ada <b>5</b>. Itulah <b>selisih</b>nya!','<b>12 − 7 = 5</b><br>Selisih 12 dan 7 adalah <b>5</b>. Koko punya 5 batang lebih banyak.'];
+function cmpRender(){$('cmp').innerHTML=cmpGrid(12,7,Math.min(cs,2));$('cmpb').textContent=CB[cs];$('cmpc').innerHTML=CC[cs]}
+function cmpNext(){cs=cs===3?0:cs+1;cmpRender()}
+
+/* Langkah 4: simulasi pemasangan 12 dan 7 */
+let P;
+const say=h=>$('st').innerHTML=h;
+function buildSim(){
+ P=0;
+ $('sim').innerHTML=`<table class="pv"><tr><th></th><th>🐻 Koko</th><th>🐿️ Bona</th><th>Selisih</th></tr><tr><td>Batang coklat</td><td><b>12</b></td><td><b>7</b></td><td><b id="vS">?</b></td></tr></table>
+ <div class="st" id="st">Ketuk batang coklat <b>Koko</b> satu per satu untuk memasangkannya dengan batang Bona 👇</div>
+ <div class="stage"><div class="cg" id="g"></div></div>
+ <div class="ask hide" id="ask"><b>Berapa batang Koko yang tidak punya pasangan?</b><br><button class="btn" onclick="ans(4)">4</button><button class="btn" onclick="ans(5)">5</button><button class="btn" onclick="ans(6)">6</button></div>
+ <div class="banner hide" id="bn"></div>`;
+ let h='<div class="gl">🐻 Koko (12)</div>';
+ for(let i=0;i<12;i++)h+='<div class="cb tp"></div>';
+ h+='<div class="gl">🐿️ Bona (7)</div>';
+ for(let i=0;i<12;i++)h+=i<7?`<div class="cb" id="bb${i}"></div>`:'<div class="em"></div>';
+ $('g').innerHTML=h;
+ $('g').querySelectorAll('.tp').forEach(x=>x.addEventListener('click',()=>pair(x)));
+}
+function pair(x){
+ if(P>=7||x.classList.contains('pd'))return;
+ x.classList.add('pd');$('bb'+P).classList.add('pd');P++;
+ if(P<7){say(`Sudah <b>${P}</b> pasang. Teruskan! 👇`);return}
+ document.querySelectorAll('#g .tp:not(.pd)').forEach(e=>e.classList.add('ex'));
+ $('ask').classList.remove('hide');
+ say('Semua batang Bona sudah punya pasangan ✅ Perhatikan batang Koko yang <b>bercahaya</b>.');
+}
+function ans(n){
+ if(n!==5){say('Hitung batang Koko yang bercahaya satu per satu ya 🤔');return}
+ $('ask').classList.add('hide');$('vS').textContent=5;
+ $('bn').innerHTML='🎉 Koko punya <b>5 batang lebih banyak</b> daripada Bona.<br>Selisihnya <b>5</b>, jadi <b>12 − 7 = 5</b>!<br><span style="font-weight:normal">⏸ Balik badan ke teman sebangkumu dan ceritakan caramu!</span>';
+ $('bn').classList.remove('hide');say('Selesai! Selisih 12 dan 7 adalah 5.');beep();confetti();
+}
+
+/* Langkah 6 */
+$('lat2').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{
+ const ok=b.dataset.ok,f=$('lat2f');
+ $('lat2').querySelectorAll('.opt').forEach(x=>x.disabled=true);b.classList.add(ok?'ok':'no');
+ if(ok){f.className='qf show g';f.textContent='🎉 Betul! 16 − 9 = 7. Setelah dipasangkan, sisa batang Dina ada 7.';$('cel').classList.add('show');beep();confetti()}
+ else{f.className='qf show w';f.textContent=b.dataset.f+' Coba lagi!';setTimeout(()=>{$('lat2').querySelectorAll('.opt').forEach(x=>{x.disabled=false;x.classList.remove('no')})},1200)}}));
+
+/* tanya-jawab & urutan */
+function reveal(id,sel,qa){
+ const it=[...$(id).querySelectorAll(sel)];
+ it.forEach((x,i)=>{if(!i)x.classList.add('show');if(i===it.length-1)x.classList.add('last');
+  x.addEventListener('click',()=>{
+   if(!x.classList.contains('show')||x.classList.contains('opened'))return;
+   if(qa&&!x.classList.contains('answered')){x.classList.add('answered');x.querySelector('.ans').classList.add('show');if(x.classList.contains('last'))x.classList.add('opened');return}
+   x.classList.add('opened');if(it[i+1])it[i+1].classList.add('show')})});
+}
+
+/* inisialisasi */
+reveal('qa1','.qi',1);reveal('qa2','.qi',1);reveal('qa5','.qi',1);reveal('s3seq','.seq',0);
+setupTiles('pv2','🎉 Tepat! Koko punya 12, Bona punya 7, dan Koko punya lebih banyak.');
+setupTiles('eq3','🎉 Hebat! Persamaannya <strong>12 − 7 = ?</strong>. Cari tahu “?”-nya di Simulasi!');
+setupTiles('lat1t','🎉 Tepat! <strong>15 − 9 = 6</strong>',()=>setTimeout(()=>$('lat2').classList.add('show'),600));
+cmpRender();buildSim();go(1);
+</script>
+</body>
+</html>

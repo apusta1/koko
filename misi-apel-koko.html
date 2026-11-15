@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Misi Kebun Apel Koko</title>
+<style>
+:root{--bg:#f4f9ee;--pc:#5d4037;--ac:#e53935;--gr:#43a047;--bd:#d7ccc8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:#333;margin:0;padding:0 0 92px;font-size:16px}
+.hide{display:none!important}
+header{text-align:center;padding:10px 12px 0}
+h1{color:var(--pc);margin:0;font-size:1.3rem}h2{color:var(--pc);font-size:1.1rem;margin:0 0 8px}
+.sub{color:#795548;font-size:.8rem}
+.stepper{position:sticky;top:0;z-index:50;display:flex;background:var(--bg);padding:8px 4px 6px;max-width:700px;margin:0 auto}
+.si{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;cursor:pointer;isolation:isolate}
+.si:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:4px;background:var(--bd);z-index:-1}
+.si.completed:not(:last-child)::after{background:var(--pc)}
+.sc{width:28px;height:28px;border-radius:50%;background:#efebe9;border:2px solid var(--bd);color:var(--pc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;margin-bottom:3px}
+.sn{font-size:.62rem;font-weight:600;color:#795548}
+.si.active .sc,.si.completed .sc{background:var(--pc);border-color:var(--pc);color:#fff}
+.si.active .sc{transform:scale(1.15)}.si.active .sn{color:var(--pc);font-weight:700}
+.card{background:#fff;border-radius:14px;border:1px solid var(--bd);box-shadow:0 3px 8px rgba(0,0,0,.05);max-width:700px;margin:6px 10px;padding:14px}
+@media(min-width:720px){.card{margin:6px auto}}
+.step{display:none}.step.active{display:block;animation:up .35s}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.hero{display:block;width:100%;max-height:230px;object-fit:contain;border-radius:12px;background:#e8f5e9;margin:8px 0}
+.ph{display:flex;align-items:center;justify-content:center;flex-direction:column;min-height:110px;width:100%;border:2px dashed #bcaaa4;border-radius:12px;background:#f5efeb;color:#8d6e63;font-size:.72rem;text-align:center;padding:8px;margin:8px 0;word-break:break-all}.ph b{font-size:1.4rem}
+.bubble{background:#fff8e1;border:2px solid #ffe082;border-radius:14px;padding:10px 12px;margin:8px 0;line-height:1.5}
+.bubble b.n{background:#ffe082;border-radius:6px;padding:0 6px}
+.item{width:40px;height:40px;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;cursor:grab}
+.item::after{content:"🍎";font-size:32px;line-height:1}
+.img-ap .item{background:url(assets/apel.png) center/contain no-repeat}.img-ap .item::after{content:none}
+.item.lifting{opacity:.25}.item.bounce{animation:shake .4s}
+.ghost{position:fixed!important;z-index:3000;pointer-events:none;transform:scale(1.25)}
+.ground{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:10px;background:#c8e6c9;border-radius:12px;margin-top:12px;min-height:58px}
+.baskets{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:20px}
+.bsk{flex:1 1 90px;max-width:140px;border:3px solid #8d6e63;border-radius:6px 6px 26px 26px;background:#ffe0b2;padding:2px 2px 6px;text-align:center;animation:pop .3s}
+.bsk .in{display:flex;flex-wrap:wrap;gap:1px;justify-content:center;align-content:flex-end;min-height:84px;padding:4px}
+.bsk .in .item{width:30px;height:30px;cursor:default}.bsk .in .item::after{font-size:24px}
+.bsk .lb{font-size:.75rem;font-weight:700;color:var(--pc)}
+.bsk.full{border-color:var(--gr);background:#dcedc8}
+.msg{min-height:22px;text-align:center;font-size:.85rem;font-weight:700;color:#e65100;margin-top:6px}
+.btn{background:var(--gr);color:#fff;border:none;border-radius:24px;padding:12px 20px;font-size:1rem;font-weight:700;cursor:pointer;min-height:48px}
+.btn.alt{background:var(--pc)}.btn:disabled{opacity:.4}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0;align-items:center}
+.fb{display:none;border-radius:10px;padding:10px 12px;margin:10px 0;font-weight:700;line-height:1.45}
+.fb.show{display:block;animation:pop .35s}.fb.ok{background:#e8f5e9;color:#2e7d32;border-left:4px solid #4caf50}.fb.no{background:#fff3e0;color:#e65100;border-left:4px solid #ff9800}
+.choices{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.ch{border:2px solid var(--bd);border-radius:14px;padding:12px;font-size:1rem;background:#fff;text-align:left;cursor:pointer;min-height:56px}
+.ch b{display:inline-block;background:#1e88e5;color:#fff;border-radius:8px;padding:2px 9px;margin-right:6px}.ch.a b{background:var(--ac)}
+.ch.good{border-color:#4caf50;background:#e8f5e9;animation:pop .4s}.ch.bad{border-color:#e53935;background:#ffebee;animation:shake .4s}
+.eq{display:flex;justify-content:center;align-items:center;gap:8px;font-size:1.7rem;font-weight:700;color:var(--pc);flex-wrap:wrap;margin:10px 0}
+.eq .box,.eq input{min-width:56px;height:52px;border:2px dashed #ab9086;border-radius:10px;background:#faf3ef;text-align:center;font-size:1.6rem;font-weight:700;color:var(--pc);display:inline-flex;align-items:center;justify-content:center;padding:0 6px;width:76px}
+.eq input:focus{outline:3px solid #ffcc80;border-style:solid}
+.mission{background:#fff3e0;border:2px solid #ffb74d;border-radius:12px;padding:10px 12px;font-weight:700}
+.lvs{display:flex;gap:6px;margin-bottom:8px}.lvb{flex:1;border:2px solid var(--bd);background:#fff;border-radius:12px;padding:10px 4px;font-weight:700;color:var(--pc);font-size:.9rem;min-height:46px}.lvb.on{background:var(--pc);color:#fff;border-color:var(--pc)}
+.lines{font-size:1.3rem;line-height:1.7;background:#faf3ef;border-radius:10px;padding:8px 12px;margin:8px 0}
+.mc{margin:14px 0;padding:12px;border:1px solid var(--bd);border-radius:12px}
+.cel{display:none;text-align:center;padding:14px;background:#fff8e1;border:2px solid #ffe082;border-radius:12px;margin-top:14px}.cel.show{display:block;animation:pop .5s}
+.cel input{padding:10px;border:2px solid var(--bd);border-radius:10px;font-size:1rem;width:min(260px,100%);text-align:center}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:space-between;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid var(--bd)}
+.nav .btn{flex:1;max-width:300px}
+.confetti{position:fixed;top:-30px;font-size:24px;pointer-events:none;z-index:2000;animation:fall 3s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+/* Panduan Guru */
+:root{--tc:#6a4c93;--ts:#f1eaf9;--tb:#d9c8ea}
+.btn-teacher{display:inline-flex;align-items:center;gap:7px;background:var(--ts);border:1px solid var(--tb);color:var(--tc);border-radius:20px;padding:8px 14px;font-size:.85rem;font-weight:700;cursor:pointer;margin-top:8px;min-height:40px}
+.btn-teacher:hover{background:#e6d9f3}
+.scrim{position:fixed;inset:0;background:rgba(40,25,10,.45);opacity:0;visibility:hidden;transition:.25s;z-index:1000}
+.scrim.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);background:#fff;z-index:1001;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-head{background:var(--tc);color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.drawer-head h2{margin:0;font-size:1.1rem;color:#fff;display:flex;align-items:center;gap:8px}
+.drawer-close{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1.3rem;width:40px;height:40px;border-radius:50%;cursor:pointer;line-height:1}
+.drawer-body{padding:16px 18px calc(16px + env(safe-area-inset-bottom,0px));overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.t-section{margin-bottom:16px}
+.t-section h3{font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--tc);margin:0 0 8px}
+.t-block{background:var(--ts);border:1px solid var(--tb);border-radius:10px;padding:12px 14px;font-size:.92rem;line-height:1.55;color:#3f2d52}
+.t-block ul{margin:8px 0 0;padding-left:20px}.t-block li{margin-bottom:6px}
+.t-qa{background:#fff;border-left:4px solid var(--tc);border-radius:8px;padding:8px 10px;margin-top:10px;font-size:.88rem}
+.t-qa .qg{color:var(--tc);font-weight:700}.t-qa .ag{color:#388e3c;font-weight:700}
+.t-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.t-meta span{background:#fff;border:1px solid var(--tb);border-radius:16px;padding:4px 10px;font-size:.78rem;font-weight:700;color:var(--tc)}
+</style>
+</head>
+<body>
+<!--
+ DAFTAR ASET (folder assets/ ; jika belum ada, tampil kotak placeholder bernama file)
+ Gambar: koko-kebun.png (Layar 1), koko-berpikir.png (Layar 2), koko-selebrasi.png (selebrasi)
+ Ikon  : apel.png (PNG transparan; jika belum ada dipakai emoji 🍎)
+ Audio (opsional): audio/angka-1.mp3 ... audio/angka-30.mp3, audio/fanfare.mp3 (jika belum ada dipakai suara browser)
+-->
+<header><h1>🍎 Misi Kebun Apel Koko 🐻</h1><div class="sub">Perkalian: Kelompok Sama Banyak</div>
+ <button class="btn-teacher" id="open-teacher">👩‍🏫 Panduan Guru</button></header>
+<div class="stepper" id="stp"></div>
+
+<div class="card">
+<!-- 1 MASALAH -->
+<div class="step active" id="step-1">
+ <h2>Misi Kamu Hari Ini</h2>
+ <img class="hero" src="assets/koko-kebun.png" alt="Koko di kebun apel">
+ <div class="bubble">Halo, Sobat! Hari ini Koko panen apel. Koko punya <b class="n">3</b> keranjang. Koko ingin setiap keranjang berisi apel yang sama banyak, yaitu <b class="n">4</b> apel. Koko bingung, berapa semua apel yang Koko butuhkan? Bisakah kamu membantu Koko?</div>
+ <div class="mission">1️⃣ Tekan <u>+ Keranjang</u> sampai ada 3 keranjang.<br>2️⃣ Seret (atau ketuk) apel ke keranjang sampai tiap keranjang berisi 4 apel.</div>
+ <div class="row"><button class="btn" id="add1">＋ Keranjang</button></div>
+ <div id="g1"></div>
+ <div class="fb" id="fb1"></div>
+</div>
+<!-- 2 CARI CARA -->
+<div class="step" id="step-2">
+ <h2>Ayo Berpikir!</h2>
+ <img class="hero" src="assets/koko-berpikir.png" alt="Koko berpikir" style="max-height:180px">
+ <div class="bubble"><b>Bagaimana cara terbaik mengetahui jumlah semua apel di 3 keranjang ini?</b></div>
+ <div class="choices" id="c2">
+  <button class="ch a" data-ok="0"><b>A</b> Menebak jumlahnya tanpa menghitung. 🤔</button>
+  <button class="ch" data-ok="1"><b>B</b> Mengisi tiap keranjang dengan 4 apel, lalu menghitung kelompok demi kelompok. 🧺</button>
+ </div>
+ <div class="fb" id="fb2"></div>
+</div>
+<!-- 3 KONSEP -->
+<div class="step" id="step-3">
+ <h2>Konsep Kelompok Sama Banyak</h2>
+ <div class="bubble" id="b3"></div>
+ <div id="g3"></div>
+ <div class="row" id="r3"><button class="btn" id="n3">Lanjut ▶</button></div>
+ <div class="hide" id="ch3">
+  <div class="eq"><span class="box" style="width:56px">3</span><span class="box" id="op3">?</span><span class="box" style="width:56px">4</span>=<span class="box" style="width:60px">12</span></div>
+  <div class="row"><button class="btn alt" data-op="+" style="min-width:70px;font-size:1.5rem">＋</button><button class="btn alt" data-op="×" style="min-width:70px;font-size:1.5rem">×</button></div>
+  <div style="text-align:center;font-size:.8rem">3 = banyak kelompok (3 keranjang) · 4 = isi tiap kelompok (4 apel)</div>
+ </div>
+ <div class="fb" id="fb3"></div>
+</div>
+<!-- 4 COBA CARA -->
+<div class="step" id="step-4">
+ <h2>Giliranmu!</h2>
+ <div class="lvs" id="lvs"></div>
+ <div class="mission" id="mis"></div>
+ <div id="g4"></div>
+ <div class="hide" id="ansBox">
+  <div class="eq"><span id="eqL"></span><input id="ans" type="number" inputmode="numeric" pattern="[0-9]*" aria-label="Jawaban"></div>
+  <div class="row"><button class="btn" id="chk4">▶ Periksa Jawaban</button></div>
+ </div>
+ <div class="fb" id="fb4"></div>
+</div>
+<!-- 5 REFLEKSI -->
+<div class="step" id="step-5">
+ <h2>Jurnal Petualangan</h2>
+ <div class="mc" data-f="🎉 Betul! Kalau isinya sama, kita bisa menambah bilangan yang sama berulang kali." data-next="q52">
+  <b>Mengapa isi tiap keranjang harus sama banyak?</b>
+  <div class="choices"><button class="ch a"><b>A</b> Agar cepat selesai.</button><button class="ch" data-ok="1"><b>B</b> Agar kita bisa menghitung dengan menambah bilangan yang sama berulang kali.</button></div><div class="fb"></div>
+ </div>
+ <div class="mc hide" id="q52" data-f="🎉 Sama, yaitu 12! Ini awal sifat tukar tempat: 4 × 3 = 3 × 4." data-next="cel">
+  <b>⭐ Tantangan Ekstra:</b> Koko punya 4 keranjang berisi 3 apel dan ingin menukar menjadi 3 keranjang berisi 4 apel. Apa yang kamu temukan?
+  <div class="lines" id="v52"></div>
+  <div class="choices"><button class="ch a"><b>A</b> Jumlah apelnya berbeda.</button><button class="ch" data-ok="1"><b>B</b> Jumlah apelnya sama, yaitu 12.</button></div><div class="fb"></div>
+ </div>
+ <div class="cel" id="cel">
+  <img class="hero" src="assets/koko-selebrasi.png" alt="Koko merayakan" style="max-height:200px">
+  <h3 style="color:#d84315;margin:6px 0">Selamat! Kamu Pahlawan Panen Apel Hari Ini! 🎉</h3>
+  <p>Tulis namamu untuk Sertifikat Digital Koko:</p>
+  <input id="nm" maxlength="30" placeholder="Nama kamu"><div class="row"><button class="btn" id="dl">⬇ Unduh Sertifikat</button></div>
+ </div>
+</div>
+<!-- 6 UJI -->
+<div class="step" id="step-6">
+ <h2>🧠 Uji Pemahaman</h2>
+ <div class="mc" data-f="✅ 5 + 5 + 5 = 15 atau 3 × 5 = 15." data-next="u2"><b>Uji 1.</b> Koko berhasil mengisi 3 keranjang. Setiap keranjang berisi 5 apel. Berapa jumlah semua apel Koko?
+  <div class="choices"><button class="ch a"><b>A</b> 7</button><button class="ch" data-ok="1"><b>B</b> 15</button><button class="ch a"><b>C</b> 16</button></div><div class="fb"></div></div>
+ <div class="mc hide" id="u2" data-f="✅ Ada 5 kelompok (keranjang) dan setiap kelompok berisi 4 apel: 5 × 4 = 20." data-next="u3"><b>Uji 2.</b> Perhatikan susunan berikut. Manakah kalimat perkalian yang tepat?
+  <div class="lines" id="v62"></div>
+  <div class="choices"><button class="ch" data-ok="1"><b>A</b> 5 × 4 = 20</button><button class="ch a"><b>B</b> 4 × 5 = 20</button><button class="ch a"><b>C</b> 5 + 4 = 9</button></div><div class="fb"></div></div>
+ <div class="mc hide" id="u3"><b>Uji 3.</b> Koko membantu Mimi menyusun jeruk. Mimi memiliki 4 keranjang, dan setiap keranjang berisi 6 jeruk. Pilih <u>semua</u> pernyataan yang benar:
+  <div class="lines" id="v63"></div>
+  <div class="choices" id="o3">
+   <button class="ch" data-ok="1"><b>A</b> Jumlah seluruh jeruk adalah 24.</button>
+   <button class="ch"><b>B</b> Ada 6 kelompok yang masing-masing berisi 4 buah.</button>
+   <button class="ch" data-ok="1"><b>C</b> Kalimat perkalian yang sesuai adalah 4 × 6 = 24.</button>
+   <button class="ch" data-ok="1"><b>D</b> Jumlah semua jeruk dapat dihitung dengan 6 + 6 + 6 + 6.</button>
+   <button class="ch"><b>E</b> Karena ada 4 keranjang, jumlah jeruknya pasti 4.</button></div>
+  <div class="row"><button class="btn" id="chk6">Periksa Jawaban</button></div><div class="fb" id="fb6"></div></div>
+</div>
+</div>
+
+<div class="nav"><button class="btn alt" id="prev">← Kembali</button><button class="btn" id="nxt">Lanjut →</button></div>
+
+<!-- SCRIM & DRAWER PANDUAN GURU -->
+<div class="scrim" id="scrim" onclick="closeTeacher()"></div>
+<aside class="drawer" id="drawer" aria-label="Panduan Guru">
+ <div class="drawer-head"><h2>👩‍🏫 Panduan Guru</h2><button class="drawer-close" onclick="closeTeacher()" aria-label="Tutup">✕</button></div>
+ <div class="drawer-body">
+  <div class="t-section"><h3>Capaian Pembelajaran</h3><div class="t-block">Peserta didik memahami <b>perkalian sebagai kelompok sama banyak</b> (penjumlahan berulang), menuliskannya sebagai kalimat perkalian, dan menjelaskan arti tiap bilangan.<div class="t-meta"><span>Matematika</span><span>Operasi Bilangan</span><span>Fase A</span></div></div></div>
+  <div class="t-section"><h3>Luaran Pembelajaran</h3><div class="t-block">Siswa menyusun kelompok sama banyak dengan benda/gambar, menulis penjumlahan berulang dan kalimat perkaliannya, lalu menceritakan caranya.<div class="t-qa"><span class="ag">"Koko punya 3 keranjang, setiap keranjang berisi 4 apel. 4 + 4 + 4 = 12, jadi 3 × 4 = 12. Semuanya ada 12 apel!"</span></div></div></div>
+  <div class="t-section"><h3>Catatan Tahap Ini</h3><div id="teacher-step"></div></div>
+ </div>
+</aside>
+
+<script>
+const $=id=>document.getElementById(id),qa=(s,r=document)=>[...r.querySelectorAll(s)];
+const NAMES=['Masalah','Cari Cara','Konsep','Coba','Refleksi','Uji'];
+/* Placeholder otomatis jika aset belum ada */
+document.addEventListener('error',e=>{const el=e.target;if(el.tagName!=='IMG'||!el.getAttribute('src'))return;const p=document.createElement('div');p.className='ph';p.innerHTML='<b>🖼️</b>'+el.getAttribute('src');el.replaceWith(p)},true);
+{const i=new Image();i.onload=()=>document.documentElement.classList.add('img-ap');i.src='assets/apel.png'}
+/* Audio: file dulu, jika tidak ada pakai suara browser */
+function sfx(f,fb){let d=0;const k=()=>{if(!d){d=1;fb()}};const a=new Audio('assets/audio/'+f);a.onerror=k;a.play().catch(k)}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t));u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+const playCount=n=>sfx(`angka-${n}.mp3`,()=>speak(n));
+function beep(){try{const c=new AudioContext();[523,659,784,1047].forEach((f,i)=>{const t=c.currentTime+i*.15,o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)})}catch(e){}}
+const fanfare=()=>sfx('fanfare.mp3',beep);
+function confetti(){for(let i=0;i<36;i++){const s=document.createElement('span');s.className='confetti';s.textContent=['🎉','✨','🍎','⭐'][i%4];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*1.5+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),5000)}}
+const fbx=(el,ok,t)=>{el.className='fb show '+(ok?'ok':'no');el.innerHTML=t};
+const rows=(n,c,e)=>Array.from({length:n},()=>`🧺: ${e.repeat(c)}`).join('<br>');
+$('v52').innerHTML=`4 keranjang × 3 apel<br>${rows(4,3,'🍎')}<hr>3 keranjang × 4 apel<br>${rows(3,4,'🍎')}`;
+$('v62').innerHTML=rows(5,4,'🍎');$('v63').innerHTML=rows(4,6,'🍊');
+
+/* Panduan Guru */
+const TEACHER_NOTES={
+ 1:`<div class="t-block">Bacakan masalah bersama, lalu minta siswa menekan <b>+ Keranjang</b> tiga kali (tiap tekan ada hitungan 1, 2, 3). Apel bisa diseret atau cukup diketuk; apel yang diketuk masuk ke keranjang yang belum penuh. Keranjang berisi 4 apel akan menolak apel tambahan (apel bergetar), jadi isi tiap keranjang selalu sama.<div class="t-qa"><span class="qg">Tanya:</span> "Apa yang sama di setiap keranjang?" <span class="ag">→ isinya, yaitu 4 apel.</span></div><ul><li>Setelah semua penuh, jangan langsung menyebut 12. Biarkan siswa menebak dulu; jawabannya dicari di tahap berikutnya.</li></ul></div>`,
+ 2:`<div class="t-block">Dua pilihan cara: menebak atau mengisi tiap keranjang lalu menghitung kelompok demi kelompok. Pilihan A memberi umpan balik agar siswa mencari cara yang lebih pasti. Minta siswa mengemukakan alasan sebelum menekan pilihan.<div class="t-qa"><span class="qg">Tanya:</span> "Kalau Koko menebak, bagaimana kita tahu tebakannya benar?"</div></div>`,
+ 3:`<div class="t-block">Fase <b>abstrak/simbolik</b>. Tekan <b>Lanjut</b> berulang kali: tiap keranjang terisi 4 apel dengan hitungan 4, 8, 12, lalu muncul pilihan tanda pada 3 _ 4 = 12. Ajak kelas ikut berhitung 4, 8, 12 dengan suara.<div class="t-qa"><span class="qg">Tanya:</span> "Apa arti angka 3? Apa arti angka 4?" <span class="ag">→ 3 = banyak kelompok (keranjang); 4 = isi tiap kelompok (apel).</span></div><ul><li>Jika siswa memilih ＋, bahasanya benar sebagai penjumlahan berulang, tetapi "3 kelompok yang isinya sama" ditulis dengan tanda ×.</li><li>Biasakan membaca 3 × 4 sebagai "3 kelompok, isi tiap kelompok 4".</li></ul></div>`,
+ 4:`<div class="t-block">Latihan mandiri atau berpasangan dengan 3 level: <b>2 × 5</b>, <b>4 × 3</b>, <b>5 × 4</b>. Keranjang sudah tersedia; setelah semua apel masuk, kotak jawaban muncul. Bantuan bertahap: salah pertama mengajak menghitung keranjang demi keranjang, salah kedua menunjukkan penjumlahan berulang, salah ketiga mengisi jawaban sebagai contoh dan siswa menekan Periksa Jawaban lagi.<div class="t-qa"><span class="qg">Pengayaan:</span> "Kalau keranjangnya ditambah satu, apel Koko bertambah berapa?" <span class="ag">→ bertambah sebanyak isi satu keranjang.</span></div><ul><li>Perhatikan siswa yang menukar banyak keranjang dengan isi tiap keranjang saat menuliskan penjumlahan.</li></ul></div>`,
+ 5:`<div class="t-block">Refleksi lisan. Pertanyaan pertama menguatkan alasan mengapa isi tiap keranjang harus sama banyak (agar bisa ditambah berulang). Tantangan Ekstra membandingkan 4 keranjang × 3 apel dengan 3 keranjang × 4 apel: totalnya sama-sama 12. Ini awal pemahaman sifat tukar tempat; cukup dibahas informal tanpa istilah formal.<div class="t-qa"><span class="qg">Tanya:</span> "Gambar keduanya berbeda, tetapi jumlah apelnya sama. Apa yang berbeda dari kedua susunan itu?" <span class="ag">→ banyak kelompok dan isi tiap kelompok bertukar.</span></div><ul><li>Di akhir, siswa mengetik nama untuk mengunduh Sertifikat Digital Koko.</li></ul></div>`,
+ 6:`<div class="t-block">Asesmen individu. Uji 1: 3 × 5 = 15. Uji 2: gambar 5 keranjang berisi 4 apel, jadi <b>5 × 4 = 20</b> (5 kelompok, isi 4); bahas pilihan B (4 × 5) bila ada siswa yang memilihnya. Uji 3 meminta memilih semua pernyataan benar: A, C, dan D benar; B dan E salah.<div class="t-qa"><span class="qg">Pengayaan:</span> "Kalau Mimi punya 4 keranjang berisi 6 jeruk, bagaimana menulis penjumlahan berulangnya?" <span class="ag">→ 6 + 6 + 6 + 6 = 24.</span></div><ul><li>Pada Uji 3, perhatikan siswa yang memilih E: ia mengira banyak keranjang sama dengan banyak jeruk.</li></ul></div>`
+};
+function updateTeacherPanel(n){$('teacher-step').innerHTML=TEACHER_NOTES[n]||TEACHER_NOTES[1]}
+function openTeacher(){$('scrim').classList.add('open');$('drawer').classList.add('open')}
+function closeTeacher(){$('scrim').classList.remove('open');$('drawer').classList.remove('open')}
+$('open-teacher').onclick=openTeacher;
+
+/* Navigasi */
+$('stp').innerHTML=NAMES.map((n,i)=>`<div class="si" onclick="go(${i+1})"><div class="sc">${i+1}</div><div class="sn">${n}</div></div>`).join('');
+let cur=1;
+function go(n){cur=n;updateTeacherPanel(n);qa('.step').forEach(e=>e.classList.remove('active'));$('step-'+n).classList.add('active');
+ qa('.si').forEach((e,i)=>{e.classList.remove('active','completed');if(i+1<n)e.classList.add('completed');else if(i+1===n)e.classList.add('active')});
+ $('prev').style.visibility=n==1?'hidden':'visible';$('nxt').style.visibility=n==6?'hidden':'visible';window.scrollTo({top:0,behavior:'smooth'})}
+$('prev').onclick=()=>go(cur-1);$('nxt').onclick=()=>go(cur+1);
+
+/* Mesin seret + ketuk (pointer: mouse, sentuh, papan interaktif) */
+function dragify(el,targets,drop,tap){
+ el.addEventListener('pointerdown',e=>{if(el.dataset.done)return;e.preventDefault();
+  const r=el.getBoundingClientRect(),g=el.cloneNode(true),x0=e.clientX,y0=e.clientY;let mv=0;
+  g.classList.add('ghost');g.style.width=r.width+'px';g.style.height=r.height+'px';
+  const m=ev=>{if(Math.abs(ev.clientX-x0)+Math.abs(ev.clientY-y0)>8&&!mv){mv=1;document.body.appendChild(g);el.classList.add('lifting')}
+   g.style.left=ev.clientX-r.width/2+'px';g.style.top=ev.clientY-r.height/2+'px'};
+  const u=ev=>{removeEventListener('pointermove',m);removeEventListener('pointerup',u);removeEventListener('pointercancel',u);g.remove();el.classList.remove('lifting');
+   if(!mv)return tap(el);const h=document.elementFromPoint(ev.clientX,ev.clientY),t=h&&targets().find(z=>z.contains(h));if(t)drop(el,t)};
+  addEventListener('pointermove',m);addEventListener('pointerup',u);addEventListener('pointercancel',u)})}
+
+/* Permainan keranjang: n keranjang, tiap keranjang cap apel */
+function game(root,o){
+ root.innerHTML='<div class="baskets"></div><div class="ground"></div><div class="msg"></div>';
+ const B=root.querySelector('.baskets'),G=root.querySelector('.ground'),M=root.querySelector('.msg'),api={bs:[]};
+ api.add=()=>{if(api.bs.length>=o.n)return;const b=document.createElement('div');b.className='bsk';b.innerHTML=`<div class="in"></div><span class="lb">Keranjang ${api.bs.length+1}</span>`;B.appendChild(b);api.bs.push(b);playCount(api.bs.length)};
+ const cnt=b=>b.firstChild.children.length,free=()=>api.bs.find(b=>cnt(b)<o.cap);
+ function put(el,b){
+  if(!b){M.textContent=api.bs.length?'Semua keranjang sudah penuh.':'Tambah keranjang dulu ya 🧺';return}
+  if(cnt(b)>=o.cap){el.classList.add('bounce');setTimeout(()=>el.classList.remove('bounce'),450);M.textContent='Isi tiap keranjang harus sama banyak.';return}
+  M.textContent='';el.dataset.done=1;b.firstChild.appendChild(el);playCount(cnt(b));
+  if(cnt(b)==o.cap){b.classList.add('full');b.querySelector('.lb').textContent=`${o.cap} apel ✓`}
+  if(api.bs.length==o.n&&api.bs.every(x=>cnt(x)==o.cap))setTimeout(o.done,500)}
+ for(let i=0;i<o.n*o.cap;i++){const a=document.createElement('div');a.className='item';G.appendChild(a);dragify(a,()=>api.bs,put,el=>put(el,free()))}
+ if(o.pre)for(let i=0;i<o.n;i++){const b=document.createElement('div');b.className='bsk';b.innerHTML=`<div class="in"></div><span class="lb">Keranjang ${i+1}</span>`;B.appendChild(b);api.bs.push(b)}
+ return api}
+
+/* Layar 1 */
+const g1=game($('g1'),{n:3,cap:4,done:()=>{fbx($('fb1'),1,'🎉 Isi satu keranjang = 4 apel. Ada 3 keranjang, jadi Koko butuh 12 apel? Ayo cari caranya di langkah berikutnya!');fanfare()}});
+$('add1').onclick=()=>{g1.add();if(g1.bs.length>=3)$('add1').disabled=true};
+
+/* Layar 2 */
+qa('#c2 .ch').forEach(b=>b.onclick=()=>{
+ if(b.dataset.ok==='1'){b.classList.add('good');fbx($('fb2'),1,'💡 Betul! Isi tiap keranjang sama banyak, lalu hitung kelompok demi kelompok.');fanfare()}
+ else{b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500);fbx($('fb2'),0,'🐻 Hmm, menebak bisa salah. Ayo cari cara yang lebih pasti!')}});
+
+/* Layar 3 */
+const T3=['Kita akan membagi 12 apel ke dalam 3 keranjang. Setiap keranjang berisi jumlah apel yang sama.','Keranjang 1 berisi 4 apel. Jumlahnya <b class="n">4</b>.','Tambah 4 lagi. <b class="n">4 + 4 = 8</b>.','Tambah 4 lagi. <b class="n">4 + 4 + 4 = 12</b>.','Mari kita lihat hasilnya! 4 apel, 4 apel, 4 apel.','Sekarang, susun bentuk perkaliannya! Pilih tanda yang tepat.'];
+let s3=0;
+$('g3').innerHTML=`<div class="baskets">${[1,2,3].map(i=>`<div class="bsk"><div class="in"></div><span class="lb">Keranjang ${i}</span></div>`).join('')}</div><div class="ground">${'<div class="item"></div>'.repeat(12)}</div>`;
+$('b3').innerHTML=T3[0];
+$('n3').onclick=()=>{s3++;
+ if(s3<=3){const ins=qa('#g3 .in')[s3-1],src=qa('#g3 .ground .item').slice(0,4);src.forEach(a=>ins.appendChild(a));qa('#g3 .bsk')[s3-1].classList.add('full');playCount(s3*4)}
+ $('b3').innerHTML=T3[s3];
+ if(s3==5){$('r3').classList.add('hide');$('ch3').classList.remove('hide')}};
+qa('#ch3 [data-op]').forEach(b=>b.onclick=()=>{
+ if(b.dataset.op==='×'){$('op3').textContent='×';fbx($('fb3'),1,'💡 Kesimpulan: Perkalian adalah pengelompokan sama banyak dengan penjumlahan berulang. 3 mewakili banyak kelompok, 4 mewakili isi setiap kelompok.<br>4 + 4 + 4 = 12 atau <u>3 × 4 = 12</u>. Dibaca: 3 kelompok, isi tiap kelompok 4.');fanfare()}
+ else fbx($('fb3'),0,'Hmm, 3 kelompok yang isinya sama ditulis dengan tanda lain. Coba lagi!')});
+
+/* Layar 4 */
+const LV=[[2,5],[4,3],[5,4]],done4=[0,0,0];let lv=0,miss=0;
+const lvb=()=>$('lvs').innerHTML=LV.map((l,i)=>`<button class="lvb ${i==lv?'on':''}" onclick="build4(${i})">Level ${i+1} ${done4[i]?'⭐':''}</button>`).join('');
+function build4(i){lv=i;miss=0;const[n,c]=LV[i];lvb();
+ $('mis').innerHTML=`🎯 Ada <b>${n}</b> keranjang. Setiap keranjang harus berisi <b>${c}</b> apel.`;
+ $('ans').value='';$('eqL').textContent=`${n} × ${c} =`;$('ans').disabled=false;$('chk4').disabled=false;$('ansBox').classList.add('hide');$('fb4').className='fb';
+ game($('g4'),{n,cap:c,pre:1,done:()=>{$('ansBox').classList.remove('hide');$('ans').focus({preventScroll:true})}})}
+$('chk4').onclick=()=>{const[n,c]=LV[lv],v=+$('ans').value,all=Array(n).fill(c).join(' + ');
+ if($('ans').value!==''&&v===n*c){done4[lv]=1;lvb();$('ans').disabled=$('chk4').disabled=true;fanfare();
+  fbx($('fb4'),1,`⭐ Benar! ${n} keranjang, tiap keranjang berisi ${c} apel.<br>${all} = ${v}.<br>${n} × ${c} = ${v}.`+(done4.every(Boolean)?'<br>🏆 Semua level selesai! Lanjut ke Refleksi.':''));if(done4.every(Boolean))confetti()}
+ else{miss++;
+  if(miss==1)fbx($('fb4'),0,`Coba hitung keranjang demi keranjang: ${c}, ${c*2}, ...`);
+  else if(miss==2)fbx($('fb4'),0,`Tambahkan ${n} kali angka ${c}: ${all} = ?`);
+  else{$('ans').value=n*c;fbx($('fb4'),0,`Lihat contoh: ${all} = ${n*c}, jadi ${n} × ${c} = ${n*c}. Tekan Periksa Jawaban lagi.`)}}};
+build4(0);
+
+/* Pilihan ganda (Refleksi & Uji) */
+qa('.mc[data-f]').forEach(m=>{const f=m.querySelector('.fb');qa('.ch',m).forEach(b=>b.onclick=()=>{if(m.dataset.done)return;
+ if(b.dataset.ok){b.classList.add('good');m.dataset.done=1;fbx(f,1,m.dataset.f);fanfare();const n=$(m.dataset.next);if(n){n.classList.remove('hide');n.classList.add('show')}}
+ else{b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500);fbx(f,0,'Coba lagi, pikirkan baik-baik. 🤔')}})});
+/* Uji 3: pilih banyak */
+qa('#o3 .ch').forEach(b=>b.onclick=()=>b.classList.toggle('sel'));
+$('chk6').onclick=()=>{const bs=qa('#o3 .ch'),pick=bs.filter(b=>b.classList.contains('sel'));
+ const hit=pick.filter(b=>b.dataset.ok).length,ex=pick.length-hit;
+ if(hit==3&&!ex){bs.forEach(b=>b.dataset.ok&&b.classList.add('good'));fbx($('fb6'),1,'🎉 Hebat! Kamu memahami bahwa perkalian adalah cara untuk menghitung beberapa kelompok yang sama banyak.');$('chk6').disabled=true;fanfare();confetti()}
+ else if(hit)fbx($('fb6'),0,'👍 Bagus! Coba periksa kembali pernyataan yang menjelaskan jumlah kelompok dan isi setiap kelompok.');
+ else fbx($('fb6'),0,'🤔 Perhatikan lagi: ada berapa keranjang? Berapa jeruk di setiap keranjang? Coba tuliskan sebagai penjumlahan berulang.')};
+/* Selebrasi & sertifikat */
+new MutationObserver(()=>{if($('cel').classList.contains('show')&&!$('cel').dataset.f){$('cel').dataset.f=1;confetti()}}).observe($('cel'),{attributes:true});
+$('dl').onclick=()=>{const c=document.createElement('canvas');c.width=1000;c.height=700;const x=c.getContext('2d');
+ x.fillStyle='#fffde7';x.fillRect(0,0,1000,700);x.strokeStyle='#43a047';x.lineWidth=14;x.strokeRect(25,25,950,650);
+ x.textAlign='center';x.fillStyle='#5d4037';x.font='bold 56px Segoe UI,sans-serif';x.fillText('Sertifikat Digital Koko',500,150);
+ x.font='30px Segoe UI,sans-serif';x.fillText('Diberikan kepada',500,230);x.fillStyle='#e53935';x.font='bold 64px Segoe UI,sans-serif';x.fillText($('nm').value.trim()||'Murid Hebat',500,330);
+ x.fillStyle='#5d4037';x.font='30px Segoe UI,sans-serif';x.fillText('Pahlawan Panen Apel Hari Ini!',500,420);x.fillText('Misi Kebun Apel Koko: Perkalian 🍎🧺',500,480);
+ const a=document.createElement('a');a.download='sertifikat-koko.png';a.href=c.toDataURL('image/png');a.click()};
+go(1);
+</script>
+</body>
+</html>
