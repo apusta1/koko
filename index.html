@@ -1,246 +1,1579 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Petualangan Matematika Koko Beruang</title>
-<style>
-    :root {
-        --bg: #fdf8f5;
-        --pc: #5d4037;
-        --ac: #ff9800;
-        --bd: #d7ccc8;
-        --mut: #795548;
-        --card-bg: #ffffff;
-    }
-    
-    * {
-        box-sizing: border-box;
-    }
-    
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: var(--bg);
-        color: #333;
-        margin: 0;
-        padding: 30px 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Manipulative: Pesta Kue Koko Beruang</title>
+    <style>
+        :root {
+            --bg-color: #fdf8f5;
+            --primary-color: #5d4037;
+            --accent-color: #ff9800;
+            --card-bg: #ffffff;
+            --border-color: #d7ccc8;
+            --teacher-color: #6a4c93;
+            --teacher-soft: #f1eaf9;
+            --teacher-border: #d9c8ea;
+        }
 
-    header {
-        text-align: center;
-        margin-bottom: 30px;
-        max-width: 800px;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    h1 {
-        color: var(--pc);
-        margin: 5px 0;
-        font-size: 2rem;
-    }
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
 
-    .sub {
-        color: var(--mut);
-        font-size: 1.1rem;
-        margin-top: 10px;
-    }
+        /* Tombol Panduan Guru */
+        .btn-teacher {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background-color: var(--teacher-soft);
+            border: 1px solid var(--teacher-border);
+            color: var(--teacher-color);
+            border-radius: 20px;
+            padding: 7px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-teacher:hover {
+            background-color: #e6d9f3;
+        }
 
-    /* Grid Layout Diperbarui: Lebar ditambah jadi 1200px agar muat 4 baris */
-    .mission-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        width: 100%;
-        max-width: 1200px; 
-    }
+        /* Scrim & Drawer Panduan Guru */
+        .scrim {
+            position: fixed;
+            inset: 0;
+            background: rgba(40, 25, 10, 0.45);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s;
+            z-index: 1000;
+        }
+        .scrim.open { opacity: 1; visibility: visible; }
 
-    /* Styling Link & Card */
-    .card-link {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        outline: none;
-    }
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: min(420px, 92vw);
+            background: var(--card-bg);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: -12px 0 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .drawer.open { transform: none; }
 
-    .card {
-        background: var(--card-bg);
-        border-radius: 14px;
-        border: 2px solid var(--bd);
-        box-shadow: 0 4px 10px rgba(0,0,0,.05);
-        padding: 16px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
+        .drawer-head {
+            background: var(--teacher-color);
+            color: #fff;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .drawer-head h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .drawer-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .drawer-body {
+            padding: 16px 18px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .t-section { margin-bottom: 16px; }
+        .t-section h3 {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--teacher-color);
+            margin: 0 0 8px;
+        }
+        .t-block {
+            background: var(--teacher-soft);
+            border: 1px solid var(--teacher-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.92rem;
+            line-height: 1.55;
+            color: #3f2d52;
+        }
+        .t-block ul { margin: 8px 0 0; padding-left: 20px; }
+        .t-block li { margin-bottom: 6px; }
+        .t-qa {
+            background: #fff;
+            border-left: 4px solid var(--teacher-color);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 10px;
+            font-size: 0.88rem;
+        }
+        .t-qa .qg { color: var(--teacher-color); font-weight: bold; }
+        .t-qa .ag { color: #388e3c; font-weight: bold; }
+        .t-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+        .t-meta span {
+            background: #fff;
+            border: 1px solid var(--teacher-border);
+            border-radius: 16px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            color: var(--teacher-color);
+        }
 
-    .card-link:hover .card,
-    .card-link:focus .card {
-        transform: translateY(-6px);
-        border-color: var(--ac);
-        box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15);
-    }
+        h1 {
+            color: var(--primary-color);
+            margin: 5px 0;
+            font-size: 1.6rem;
+        }
 
-    /* Image Placeholder */
-    .ph {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 8px;
-        height: 160px;
-        width: 100%;
-        border: 2px dashed #bcaaa4;
-        border-radius: 12px;
-        background: #f5efeb;
-        color: #8d6e63;
-        font-size: 0.9rem;
-        margin-bottom: 16px;
-        transition: background 0.2s ease;
-    }
+        .subtitle {
+            color: #795548;
+            font-size: 0.95rem;
+        }
 
-    .card-link:hover .ph {
-        background: #fff3e0;
-        border-color: var(--ac);
-    }
+        /* ===== NAVIGASI ALUR (PROGRESS BAR PATHWAY) ===== */
+        .stepper-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 25px auto;
+            justify-content: space-between;
+        }
 
-    .ph b {
-        font-size: 3.5rem;
-        line-height: 1;
-        filter: drop-shadow(2px 4px 4px rgba(0,0,0,.1));
-    }
+        .stepper-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            z-index: 1;
+            isolation: isolate;
+        }
 
-    /* Badge Topik Matematika */
-    .topic-badge {
-        display: inline-block;
-        background: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #a5d6a7;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: bold;
-        margin-bottom: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+        /* Garis penghubung antar titik */
+        .stepper-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 14px; /* Center of step-counter */
+            left: 50%;
+            width: 100%;
+            height: 4px;
+            background-color: var(--border-color);
+            z-index: -1;
+            transition: background-color 0.4s ease;
+        }
 
-    /* Teks dalam Kartu */
-    .card h2 {
-        color: var(--pc);
-        margin: 0 0 10px 0;
-        font-size: 1.25rem;
-    }
+        /* Garis penghubung berubah warna jika sudah komplit */
+        .stepper-item.completed:not(:last-child)::after {
+            background-color: var(--primary-color);
+        }
 
-    .card p {
-        color: var(--mut);
-        font-size: 0.85rem;
-        margin: 0;
-        line-height: 1.5;
-        flex-grow: 1;
-    }
+        .step-counter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #efebe9;
+            border: 2px solid var(--border-color);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
 
-    /* Tombol Mulai Semu */
-    .btn-start {
-        margin-top: 16px;
-        background: #4caf50;
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 24px;
-        font-weight: bold;
-        font-size: 0.9rem;
-        width: 100%;
-        transition: background 0.2s;
-    }
+        .step-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #795548;
+            text-align: center;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
 
-    .card-link:hover .btn-start {
-        background: #388e3c;
-    }
+        .stepper-item:hover .step-counter {
+            background-color: #d7ccc8;
+        }
 
-    /* Animasi masuk */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: none; }
-    }
+        .stepper-item.active .step-counter {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.4);
+        }
 
-    .card-link {
-        animation: fadeInUp 0.5s ease backwards;
-    }
-    
-    .card-link:nth-child(1) { animation-delay: 0.1s; }
-    .card-link:nth-child(2) { animation-delay: 0.2s; }
-    .card-link:nth-child(3) { animation-delay: 0.3s; }
-    .card-link:nth-child(4) { animation-delay: 0.4s; }
+        .stepper-item.active .step-name {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
 
-</style>
+        .stepper-item.completed .step-counter {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        @media (max-width: 500px) {
+            .step-name { font-size: 0.65rem; }
+            .step-counter { width: 28px; height: 28px; font-size: 0.8rem; }
+            .stepper-item:not(:last-child)::after { top: 12px; }
+        }
+
+        /* Container Pembelajaran */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        /* Area Game / Virtual Manipulative */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .jar-container {
+            width: 170px;
+            min-height: 150px;
+            border: 3px solid #8d6e63;
+            border-radius: 0 0 20px 20px;
+            background-color: rgba(225, 245, 254, 0.5);
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 5px;
+            align-content: flex-start;
+            justify-content: center;
+            position: relative;
+            transition: min-height 0.2s ease;
+        }
+
+        .jar-label {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .plates-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .plate {
+            width: 120px;
+            min-height: 120px;
+            border: 2px dashed #ab9086;
+            border-radius: 50%;
+            background-color: #fffde7;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 4px;
+            align-content: center;
+            justify-content: center;
+            position: relative;
+            transition: min-height 0.2s ease;
+        }
+
+        .plate-label {
+            position: absolute;
+            bottom: -22px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #5d4037;
+        }
+
+        /* Cookie Item: emoji kue kering */
+        .cookie {
+            width: 30px;
+            height: 30px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            user-select: none;
+            transition: transform 0.15s ease;
+        }
+
+        .cookie:hover {
+            transform: scale(1.15);
+        }
+
+        .cookie:active {
+            cursor: grabbing;
+        }
+
+        .cookie::after {
+            content: "🍪";
+            font-size: 26px;
+            line-height: 1;
+            filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.25));
+        }
+
+        .btn-action {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-action:hover {
+            background-color: #388e3c;
+        }
+
+        /* Style Refleksi & Selebrasi */
+        .reflection-box {
+            background-color: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .celebration {
+            text-align: center;
+            display: none;
+            padding: 20px;
+            background-color: #fff8e1;
+            border-radius: 10px;
+            border: 2px solid #ffe082;
+            margin-top: 15px;
+        }
+
+        .celebration.show {
+            display: block;
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Gaya untuk video dan gambar */
+        .media-placeholder {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #efebe9;
+            border-radius: 12px;
+        }
+        .media-placeholder video,
+        .media-placeholder img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+        .media-placeholder video {
+            max-width: 700px;
+            max-height: 400px;
+            background: #333;
+        }
+        .media-placeholder img {
+            max-height: 150px;
+            object-fit: contain;
+        }
+        .media-caption {
+            font-size: 0.85rem;
+            color: #5d4037;
+            text-align: center;
+            margin-top: 4px;
+        }
+        .mute-toggle {
+            background: #5d4037;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .mute-toggle:hover {
+            background: #3e2723;
+        }
+        .video-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ===== GAYA BARU UNTUK GAMBAR LANGKAH 2 ===== */
+        .clue-images {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .clue-images .clue-item {
+            flex: 1 1 200px;
+            min-width: 160px;
+            max-width: 280px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 12px 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0d5ce;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .clue-images .clue-item:hover {
+            transform: scale(1.02);
+        }
+        .clue-images .clue-item.chosen-wrong {
+            border-color: #e53935;
+            background-color: #ffebee;
+            animation: pulseGlowWrong 0.5s ease-in-out 4;
+        }
+        .clue-images .clue-item.chosen-correct {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+            animation: pulseGlowCorrect 0.5s ease-in-out 4;
+        }
+        @keyframes pulseGlowWrong {
+            0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+            50% { box-shadow: 0 0 18px 7px rgba(229, 57, 53, 0.65); }
+        }
+        @keyframes pulseGlowCorrect {
+            0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+            50% { box-shadow: 0 0 18px 7px rgba(76, 175, 80, 0.65); }
+        }
+        .clue-images .clue-item img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #faf3ef;
+            display: block;
+        }
+        .clue-images .clue-item .clue-label {
+            display: block;
+            margin-top: 6px;
+            font-weight: 600;
+            color: #5d4037;
+            font-size: 0.9rem;
+        }
+        .clue-images .clue-item .clue-desc {
+            display: block;
+            font-size: 0.8rem;
+            color: #795548;
+        }
+
+        /* ===== REVEAL PERTANYAAN SATU PER SATU (Langkah 1 & 5) ===== */
+        .seq-reveal-item {
+            display: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .seq-reveal-item.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+        .seq-reveal-item.show:hover {
+            filter: brightness(0.98);
+        }
+        .seq-reveal-item.opened {
+            cursor: default;
+        }
+        .seq-reveal-item.show:not(.opened):not(.last-item)::after {
+            content: "👉 Klik untuk lanjut ke pertanyaan berikutnya";
+            display: block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .seq-reveal-item.show.last-item {
+            cursor: default;
+        }
+
+        /* ===== REVEAL PERTANYAAN LALU JAWABAN (Langkah 5) ===== */
+        .qa-reveal-item {
+            display: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .qa-reveal-item.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+        .qa-reveal-item.show:hover {
+            filter: brightness(0.98);
+        }
+        .qa-reveal-item.opened {
+            cursor: default;
+        }
+        .qa-answer {
+            display: none;
+            margin-top: 8px;
+        }
+        .qa-answer.show {
+            display: block;
+            animation: fadeInUp 0.35s ease;
+        }
+        .qa-reveal-item.show:not(.answered)::after {
+            content: "👉 Klik untuk lihat jawaban";
+            display: block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .qa-reveal-item.show.answered:not(.opened):not(.last-item)::after {
+            content: "👉 Klik untuk pertanyaan berikutnya";
+            display: block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ZOOM & PAN GAMBAR (Langkah 2) ===== */
+        .zoom-pan-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 280px;
+            margin: 15px auto;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: #efebe9;
+            touch-action: none;
+            cursor: grab;
+        }
+        .zoom-pan-container.grabbing {
+            cursor: grabbing;
+        }
+        .zoom-pan-inner {
+            width: 100%;
+            height: 100%;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+        .zoom-pan-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .zoom-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(40, 25, 10, 0.6);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .zoom-reset-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-color);
+            z-index: 2;
+        }
+
+        /* ===== FEEDBACK PEMBAGIAN ADIL (Langkah 4) ===== */
+        .level-feedback {
+            display: none;
+            text-align: center;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-left: 4px solid #4caf50;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-top: 5px;
+            font-weight: bold;
+            width: 100%;
+            max-width: 460px;
+            box-sizing: border-box;
+        }
+        .level-feedback.show {
+            display: block;
+            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ===== KUIS (Langkah 6) ===== */
+        .quiz-item {
+            display: none;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+        .quiz-item.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+        .quiz-question {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .quiz-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .quiz-option {
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--accent-color);
+            background: #fff8f0;
+        }
+        .quiz-option:disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+        .quiz-option.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        .quiz-option.wrong {
+            background: #ffcdd2;
+            border-color: #e53935;
+            color: #b71c1c;
+            animation: pulseGlowWrong 0.4s ease-in-out 2;
+        }
+        .quiz-image {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .quiz-image img {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 10px;
+            background: #faf3ef;
+            object-fit: contain;
+        }
+        .quiz-feedback {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .quiz-feedback.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+        .quiz-feedback.feedback-correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .quiz-feedback.feedback-wrong {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        #quiz-complete {
+            display: none;
+            text-align: center;
+            background: #fff8e1;
+            border: 2px solid #ffe082;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: bold;
+            color: #d84315;
+        }
+        #quiz-complete.show {
+            display: block;
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ===== NAVIGASI < / > DI BAWAH SETIAP LANGKAH ===== */
+        .step-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .step-nav-bottom.single-next {
+            justify-content: flex-end;
+        }
+        .step-nav-bottom.single-prev {
+            justify-content: flex-start;
+        }
+        .nav-arrow-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .nav-arrow-btn:hover {
+            background-color: #4e342e;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1>Petualangan Matematika Koko Beruang 🐻</h1>
-    <div class="sub">Pilih misi belajarmu hari ini! Eksplorasi konsep matematika dengan cara yang seru dan interaktif.</div>
-</header>
+    <header>
+        <h1>Pesta Kue Koko Beruang 🐻🍪</h1>
+        <div class="subtitle">Eksplorasi Konsep Pembagian Dasar (Fair Sharing)</div>
+        <button class="btn-teacher" id="open-teacher">👩‍🏫 Panduan Guru</button>
+    </header>
 
-<div class="mission-grid">
-    
-    <!-- Misi 1: Kotak Kue Koko -->
-    <a href="kotak-kue-koko.html" class="card-link" aria-label="Buka Kotak Kue Koko">
-        <div class="card">
-            <div class="ph">
-                <b>🍪</b>
-            </div>
-            <span class="topic-badge" style="background:#e3f2fd; color:#1565c0; border-color:#90caf9;">Pembagian Adil</span>
-            <h2>Kotak Kue Koko</h2>
-            <p>Eksplorasi konsep bagi adil sebagai cara untuk menyusun kue-kue dengan merata.</p>
-            <div class="btn-start">Mulai Misi ▶</div>
+    <!-- Navigasi Alur Pembelajaran (Progress Bar Pathway) -->
+    <div class="stepper-wrapper">
+        <div class="stepper-item active" onclick="switchStep(1)">
+            <div class="step-counter">1</div>
+            <div class="step-name">Masalah</div>
         </div>
-    </a>
-
-    <!-- Misi 2: Kebun Apel Koko -->
-    <a href="misi-apel-koko.html" class="card-link" aria-label="Buka Misi Kebun Apel Koko">
-        <div class="card">
-            <div class="ph">
-                <b>🍎</b>
-            </div>
-            <span class="topic-badge" style="background:#fce4ec; color:#c2185b; border-color:#f48fb1;">Perkalian Benda</span>
-            <h2>Misi Kebun Apel</h2>
-            <p>Bantu Koko menyusun apel ke dalam keranjang dengan kelompok yang sama banyak.</p>
-            <div class="btn-start">Mulai Misi ▶</div>
+        <div class="stepper-item" onclick="switchStep(2)">
+            <div class="step-counter">2</div>
+            <div class="step-name">Petunjuk</div>
         </div>
-    </a>
-
-    <!-- Misi 3: Madu Koko -->
-    <a href="misi-madu-koko.html" class="card-link" aria-label="Buka Misi Madu Koko">
-        <div class="card">
-            <div class="ph">
-                <b>🍯</b>
-            </div>
-            <span class="topic-badge" style="background:#fff3e0; color:#e65100; border-color:#ffcc80;">Penjumlahan</span>
-            <h2>Misi Madu Koko</h2>
-            <p>Eksplorasi konsep penjumlahan sebagai penggabungan dari dua kumpulan toples madu.</p>
-            <div class="btn-start">Mulai Misi ▶</div>
+        <div class="stepper-item" onclick="switchStep(3)">
+            <div class="step-counter">3</div>
+            <div class="step-name">Konsep</div>
         </div>
-    </a>
-
-    <!-- Misi 4: Selisih Coklat Koko -->
-    <a href="selisih-coklat-koko.html" class="card-link" aria-label="Buka Selisih Coklat Koko">
-        <div class="card">
-            <div class="ph">
-                <b>🍫</b>
-            </div>
-            <span class="topic-badge" style="background:#f3e5f5; color:#7b1fa2; border-color:#ce93d8;">Pengurangan</span>
-            <h2>Selisih Coklat Koko</h2>
-            <p>Pahami pengurangan dengan cara mencari selisih jumlah coklat Koko dan Bona.</p>
-            <div class="btn-start">Mulai Misi ▶</div>
+        <div class="stepper-item" onclick="switchStep(4)">
+            <div class="step-counter">4</div>
+            <div class="step-name">Simulasi</div>
         </div>
-    </a>
+        <div class="stepper-item" onclick="switchStep(5)">
+            <div class="step-counter">5</div>
+            <div class="step-name">Refleksi</div>
+        </div>
+        <div class="stepper-item" onclick="switchStep(6)">
+            <div class="step-counter">6</div>
+            <div class="step-name">Kuis</div>
+        </div>
+    </div>
 
-</div>
+    <div class="content-card">
 
+        <!-- TAHAP 1: MENGENAL MASALAH -->
+        <div id="step-1" class="step-content active">
+            <h2>1: Mengenal Masalah Koko</h2>
+            <p>
+                Koko Beruang sedang mengadakan pesta teh di rumah pohonnya. Ada 3 temannya yang datang berkunjung, 
+                sehingga total ada <strong>4 beruang</strong> di pesta tersebut.
+            </p>
+            <p>
+                Koko mengeluarkan 1 toples penuh berisi <strong>12 keping kue kering cokelat</strong>. 
+                Koko ingin membagikannya secara adil ke dalam <strong>4 piring</strong>.
+            </p>
+            
+            <!-- VIDEO + GAMBAR di halaman depan (step 1) -->
+            <div class="media-placeholder">
+                <div class="video-wrapper">
+                    <video id="introVideo" src="assets/Koko_Animasi.mp4" muted playsinline autoplay loop 
+                           style="width:420px; max-width:100%; background:#2d1f1a;"></video>
+                    <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+                        <button class="mute-toggle" id="muteToggle" onclick="toggleMute()">🔊 Buka suara</button>
+                    </div>
+                </div>
+            </div>
+
+	    <div class="qa-reveal-group" id="step1-questions">
+                <div class="reflection-box qa-reveal-item" style="margin-bottom:12px;">
+                    <div class="qa-question"><strong>Pertanyaan:</strong> Apa tantangan yang sedang dihadapi Koko?</div>
+                    <div class="qa-answer"><em>Jawab: Koko ingin membagi kue kepada teman-temannya secara merata adil</em></div>
+                </div>
+                <div class="reflection-box qa-reveal-item" style="margin-bottom:12px;">
+                    <div class="qa-question"><strong>Pertanyaan:</strong> Bagaimana caranya kita membantu Koko?</div>
+                    <div class="qa-answer"><em>Jawab: Menghitung berapa kue Koko, lalu menghitung berapa piring yang ada.</em></div>
+                </div>
+                <div class="reflection-box qa-reveal-item">
+                    <div class="qa-question"><strong>Pertanyaan:</strong> Ada lagi cara yang lain?</div>
+                    <div class="qa-answer"><em>Jawab: Mari kita cari tahu di langkah selanjutnya!</em></div>
+                </div>
+            </div>
+
+            <div class="step-nav-bottom single-next">
+                <button class="nav-arrow-btn nav-next" onclick="switchStep(2)">Lanjut →</button>
+            </div>
+
+        </div>
+
+        <!-- TAHAP 2: MENGENALI PETUNJUK -->
+        <div id="step-2" class="step-content">
+            <h2>2: Mengenali Petunjuk (Clues)</h2>
+            <p>Mari kita amati benda-benda yang ada di meja Koko:</p>
+
+            <div class="zoom-pan-container" id="kokoImageZoom">
+                <div class="zoom-pan-inner" id="kokoImageInner">
+                    <img src="assets/scene-picnic.png" alt="Benda-benda di meja Koko" draggable="false">
+                </div>
+                <button type="button" class="zoom-reset-btn" onclick="zoomPanReset('kokoImageZoom')">↺ Reset</button>
+                <div class="zoom-hint">🔍 Scroll / cubit dua jari untuk zoom, geser untuk pan</div>
+            </div>
+
+            <ul>
+                <li><strong>Benda 1:</strong> 1 Toples berisi <span style="color:#e65100; font-weight:bold;">12 Kue Kering</span></li>
+                <li><strong>Benda 2:</strong> <span style="color:#e65100; font-weight:bold;">4 Piring Kosong</span> (untuk 4 beruang)</li>
+            </ul>
+            <p>Bagaimanakah langkah pertama yang harus dilakukan Koko untuk memindahkannya? Apakah dibagi asal saja? Atau dibagi teratur?</p>
+            
+            <!-- GAMBAR LANGKAH 2 - LEBIH BESAR DAN MEMENUHI DIV -->
+            <div class="clue-images" id="clueChoices">
+                <div class="clue-item" data-choice="wrong">
+                    <img src="assets/acak.png" alt="dibagi acak">
+                    <span class="clue-label">🍪 Dibagi Acak</span>
+                    <span class="clue-desc">Kue diletakkan sembarangan</span>
+                </div>
+                <div class="clue-item" data-choice="correct">
+                    <img src="assets/adil.png" alt="dibagi teratur">
+                    <span class="clue-label">🍪 Dibagi Rata</span>
+                    <span class="clue-desc">Setiap piring mendapat sama</span>
+                </div>
+            </div>
+
+            <div class="step-nav-bottom">
+                <button class="nav-arrow-btn nav-prev" onclick="switchStep(1)">← Sebelumnya</button>
+                <button class="nav-arrow-btn nav-next" onclick="switchStep(3)">Lanjut →</button>
+            </div>
+        </div>
+
+        <!-- TAHAP 3: MEMPELAJARI KONSEP -->
+        <div id="step-3" class="step-content">
+            <h2>3: Konsep Berbagi Adil (Fair Sharing)</h2>
+            <p>
+                Cara paling aman agar semua mendapat bagian yang sama adalah dengan membagikannya 
+                <strong>satu per satu secara bergiliran</strong> sampai kue di toples habis.
+            </p>
+
+            <div style="background:#fff3e0; padding:12px; border-radius:6px; margin: 10px 0;">
+                <strong>Simulasi Alur Pengurangan Berulang:</strong>
+                <ul style="margin-top:5px;">
+                    <li><strong>Putaran 1:</strong> Ambil 4 kue, taruh di piring A, B, C, D → Sisa: <strong>8 kue</strong></li>
+                    <li><strong>Putaran 2:</strong> Ambil 4 kue lagi, taruh di piring A, B, C, D → Sisa: <strong>4 kue</strong></li>
+                    <li><strong>Putaran 3:</strong> Ambil 4 kue terakhir → Sisa: <strong>0 kue</strong></li>
+                </ul>
+                <p style="text-align:center; font-weight:bold; color:#e65100; margin:0;">
+                   Ayo, dicoba!
+                </p>
+            </div>
+            <!-- Gambar konsep pembagian -->
+            <div style="text-align:center; margin:10px 0;">
+                <img src="assets/scene-picnic.png" alt="Ilustrasi pembagian rata" style="max-width:100%; height:auto; border-radius:8px; background:#fff3e0; padding:8px;">
+            </div>
+
+            <div class="step-nav-bottom">
+                <button class="nav-arrow-btn nav-prev" onclick="switchStep(2)">← Sebelumnya</button>
+                <button class="nav-arrow-btn nav-next" onclick="switchStep(4)">Lanjut →</button>
+            </div>
+        </div>
+
+        <!-- TAHAP 4: SIMULASI GAME VM -->
+        <div id="step-4" class="step-content">
+            <h2>4: Eksperimen Virtual Manipulative</h2>
+            
+            <div class="controls-bar">
+                <label for="level-select"><strong>Pilih Level:</strong></label>
+                <select id="level-select" onchange="loadLevel()">
+                    <option value="1" selected>Level 1: 9 Kue ÷ 3 Piring</option>
+                    <option value="2">Level 2: 12 Kue ÷ 4 Piring</option>
+                    <option value="3">Level 3: 15 Kue ÷ 5 Piring</option>
+                    <option value="4">Level 4: 20 Kue ÷ 5 Piring</option>
+                </select>
+                <button class="btn-action" onclick="resetGame()">Reset Kue</button>
+            </div>
+<br>
+<br>
+            <div class="game-area">
+                <div class="jar-container" id="cookie-jar" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="jar-label" id="jar-count">Toples (9)</div>
+                </div>
+
+                <div class="plates-container" id="plates-area">
+                    <!-- Piring di-generate via Javascript -->
+                </div>
+
+                <div class="level-feedback" id="level-feedback" aria-live="polite"></div>
+            </div>
+
+            <div class="step-nav-bottom">
+                <button class="nav-arrow-btn nav-prev" onclick="switchStep(3)">← Sebelumnya</button>
+                <button class="nav-arrow-btn nav-next" onclick="switchStep(5)">Lanjut →</button>
+            </div>
+        </div>
+
+        <!-- TAHAP 5: REFLEKSI & SELEBRASI -->
+        <div id="step-5" class="step-content">
+            <h2>5: Refleksi Pembelajaran</h2>
+            
+            <div class="qa-reveal-group" id="step5-reflections">
+                <div class="reflection-box qa-reveal-item" style="margin-bottom:12px;">
+                    <div class="qa-question"><strong>Refleksi 1:</strong> Apakah cara membagi satu per satu (fair sharing) berhasil memecahkan masalah Koko?</div>
+                    <div class="qa-answer"><em>Jawab: Ya, karena seluruh piring terisi sama banyak tanpa ada yang iri!</em></div>
+                </div>
+
+                <div class="reflection-box qa-reveal-item" style="margin-bottom:12px;">
+                    <div class="qa-question"><strong>Refleksi 2:</strong> Mengapa tidak menaruh kue secara acak?</div>
+                    <div class="qa-answer"><em>Jawab: Jika acak, pembagian tidak adil (ada yang dapat sedikit, ada yang banyak).</em></div>
+                </div>
+
+                <div class="reflection-box qa-reveal-item" style="background-color: #fff3e0; border-left-color: #ff9800;">
+                    <div class="qa-question"><strong>Pertanyaan Kritis (Tingkat Lanjut):</strong> Bagaimana jika Koko punya 13 kue untuk 4 beruang?</div>
+                    <div class="qa-answer"><em>Jawab: Akan ada sisa 1 kue di toples yang tidak bisa dibagi rata (Pengenalan konsep Sisa Pembagian).</em></div>
+                </div>
+            </div>
+
+            <button class="btn-action" style="width:100%; margin-top:15px; font-size:1.1rem;" onclick="triggerCelebration()">
+                🎉 Rayakan Keberhasilan Bersama Koko!
+            </button>
+
+            <div id="celebration-box" class="celebration">
+                <div style="font-size: 50px;">🥳🎈🐻🍪✨</div>
+                <h3 style="color:#d84315; margin:5px 0;">Hore! Pesta Teh Koko Sukses Besar!</h3>
+                <p>Kamu hebat telah menguasai konsep pembagian dengan adil! High-five dulu! ✋</p>
+                <!-- gambar selebrasi -->
+                <img src="assets/koko-selebrasi.png" alt="Koko selebrasi" style="max-width:100%; margin-top:8px;">
+            </div>
+
+            <div class="step-nav-bottom">
+                <button class="nav-arrow-btn nav-prev" onclick="switchStep(4)">← Sebelumnya</button>
+                <button class="nav-arrow-btn nav-next" onclick="switchStep(6)">Lanjut →</button>
+            </div>
+        </div>
+
+        <!-- TAHAP 6: KUIS / CEK PEMAHAMAN -->
+        <div id="step-6" class="step-content">
+            <h2>6: Cek Pemahaman (Kuis)</h2>
+            <p>Ayo uji pemahamanmu! Jawab 3 soal berikut satu per satu.</p>
+
+            <div class="quiz-item" data-answer="2" data-feedback="🎉 Betul! 10 kue dibagi 5 piring, tiap piring dapat 2 kue!">
+                <div class="quiz-image"><img src="assets/quiz-item-1.png" alt="Ilustrasi Soal 1"></div>
+                <div class="quiz-question">
+                    <strong>Soal 1:</strong> Ada 10 kue yang akan dibagi rata ke 5 piring. Berapa banyak kue pada setiap piring?
+                </div>
+                <div class="quiz-options">
+                    <button class="quiz-option" data-value="10">10</button>
+                    <button class="quiz-option" data-value="5">5</button>
+                    <button class="quiz-option" data-value="3">3</button>
+                    <button class="quiz-option" data-value="2">2</button>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-item" data-answer="3" data-feedback="🎉 Tepat! Diperlukan 3 keranjang supaya semua mainan masuk!">
+                <div class="quiz-image"><img src="assets/quiz-item-2.png" alt="Ilustrasi Soal 2"></div>
+                <div class="quiz-question">
+                    <strong>Soal 2:</strong> Ada 9 mainan tergeletak di lantai. Setiap keranjang hanya dapat memuat 3 mainan. Berapa keranjang yang diperlukan supaya semua mainan masuk ke keranjang?
+                </div>
+                <div class="quiz-options">
+                    <button class="quiz-option" data-value="9">9</button>
+                    <button class="quiz-option" data-value="6">6</button>
+                    <button class="quiz-option" data-value="3">3</button>
+                    <button class="quiz-option" data-value="1">1</button>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-item" data-answer="2" data-feedback="🎉 Benar! 11 mainan dibagi 3 per keranjang, sisa 2 mainan yang tidak muat!">
+                <div class="quiz-image"><img src="assets/quiz-item-3.png" alt="Ilustrasi Soal 3"></div>
+                <div class="quiz-question">
+                    <strong>Soal 3:</strong> Ada 11 mainan tergeletak di lantai. Setiap keranjang hanya dapat memuat 3 mainan. Setelah keranjang-keranjang terisi penuh, berapa mainan yang tidak dapat masuk ke keranjang?
+                </div>
+                <div class="quiz-options">
+                    <button class="quiz-option" data-value="3">3</button>
+                    <button class="quiz-option" data-value="2">2</button>
+                    <button class="quiz-option" data-value="1">1</button>
+                    <button class="quiz-option" data-value="0">0</button>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div id="quiz-complete">
+                🌟 Kerja bagus! Kamu sudah menyelesaikan semua soal Cek Pemahaman. 🌟
+            </div>
+
+            <div class="step-nav-bottom single-prev">
+                <button class="nav-arrow-btn nav-prev" onclick="switchStep(5)">← Sebelumnya</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIM & DRAWER PANDUAN GURU -->
+    <div class="scrim" id="scrim" onclick="closeTeacher()"></div>
+    <aside class="drawer" id="drawer" aria-label="Panduan Guru">
+        <div class="drawer-head">
+            <h2>👩‍🏫 Panduan Guru</h2>
+            <button class="drawer-close" onclick="closeTeacher()" aria-label="Tutup">✕</button>
+        </div>
+        <div class="drawer-body">
+            <div class="t-section">
+                <h3>Capaian Pembelajaran</h3>
+                <div class="t-block">
+                    Peserta didik dapat menunjukkan pemahaman <b>pembagian sebagai pembagian rata (fair sharing)</b> suatu kumpulan benda ke dalam beberapa kelompok yang sama banyak, sebagai jembatan menuju konsep <b>pembagian sebagai pengurangan berulang</b>.
+                    <div class="t-meta"><span>Matematika</span><span>Operasi Bilangan</span><span>Fase A</span></div>
+                </div>
+            </div>
+            <div class="t-section">
+                <h3>Luaran Pembelajaran</h3>
+                <div class="t-block">
+                    Siswa dapat membagi sekumpulan benda ke beberapa wadah secara rata, lalu menjelaskan prosesnya, contoh:
+                    <div class="t-qa"><span class="ag">"12 kue dibagi 4 piring, tiap piring dapat 3 kue, karena 12 dikurangi 4 sebanyak 3 kali sampai habis."</span></div>
+                </div>
+            </div>
+            <div class="t-section">
+                <h3>Catatan Tahap Ini</h3>
+                <div id="teacher-step"></div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        let totalCookies = 12;
+        let totalPlates = 4;
+        let videoElement = null;
+
+        // Fungsi untuk mengganti step (Diperbarui untuk mendukung stepper baru)[cite: 1]
+        function switchStep(stepNum) {
+            // Matikan suara video jika sedang diputar[cite: 1]
+            if (videoElement) {
+                videoElement.muted = true;
+                const toggleBtn = document.getElementById('muteToggle');
+                if (toggleBtn) toggleBtn.textContent = '🔊 Buka suara';
+            }
+
+            // Ganti konten card yang aktif[cite: 1]
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${stepNum}`).classList.add('active');
+
+            // Perbarui status stepper/progress bar (active dan completed)
+            document.querySelectorAll('.stepper-item').forEach((el, index) => {
+                el.classList.remove('active', 'completed');
+                if (index + 1 < stepNum) {
+                    el.classList.add('completed'); // Beri warna pada langkah yang telah lewat
+                } else if (index + 1 === stepNum) {
+                    el.classList.add('active'); // Highlight langkah saat ini
+                }
+            });
+
+            updateTeacherPanel(stepNum);
+        }
+
+        /* ===================== PANDUAN GURU ===================== */
+        const TEACHER_NOTES = {
+            1: `<div class="t-block">Putar video pengantar bersama, lalu ajukan pertanyaan pemantik sebelum masuk ke masalah. Pastikan siswa memahami: 12 kue, 4 beruang, harus dibagi <b>sama rata</b>.
+                <div class="t-qa"><span class="qg">Tanya:</span> "Pernahkah kalian membagi kue atau permen ke teman-teman? Bagaimana caranya supaya semua kebagian sama banyak?"</div></div>`,
+            2: `<div class="t-block">Tunjukkan kedua gambar (dibagi acak vs dibagi rata) dan minta siswa membandingkan. Tekankan bahwa "petunjuk" di soal ini adalah jumlah kue (12) dan jumlah piring (4).
+                <div class="t-qa"><span class="qg">Tanya:</span> "Apa bedanya gambar 'dibagi acak' dan 'dibagi rata'? Mana yang adil untuk semua beruang?" <span class="ag">→ Dibagi rata, karena tidak ada yang iri.</span></div></div>`,
+            3: `<div class="t-block">Peragakan strategi <b>pengurangan berulang</b> dengan menggunakan benda konkrit seperti tutup botol, biji salak, atau daun: setiap putaran, ambil sejumlah kue sebanyak piring dan bagikan satu-satu ke tiap piring, lalu kurangi dari sisa di toples. Ulangi sampai toples habis. Banyaknya putaran = hasil bagi.
+                <div class="t-qa"><span class="qg">Tanya:</span> "Berapa kali kita mengambil 4 kue dari 12 kue sampai habis?" <span class="ag">→ 3 kali, artinya 12 : 4 = 3.</span></div></div>`,
+            4: `<div class="t-block">Dampingi siswa mencoba simulasi. Ingatkan agar kue dipindahkan <b>satu per satu bergiliran</b> ke tiap piring (bukan langsung dituang semua ke satu piring), agar strategi pembagian rata benar-benar terlihat. Feedback "kue terbagi adil" akan muncul otomatis ketika toples kosong dan semua piring berisi sama banyak, lalu hilang saat siswa berpindah level. Tugas siswa:
+                <ul>
+                    <li>Coba Level 1 (9 ÷ 3), Level 2 (12 ÷ 4), Level 3 (15 ÷ 5), dan Level 4 (20 ÷ 5).</li>
+                    <li>Pastikan setiap piring berisi jumlah kue yang sama sebelum toples kosong.</li>
+                    <li>Sebutkan hasil bagi untuk tiap level yang dicoba.</li>
+                </ul>
+                <div class="t-qa"><span class="ag">Contoh luaran: 20 kue dibagi 5 piring, tiap piring dapat 4 kue (20 : 5 = 4).</span></div></div>`,
+            5: `<div class="t-block">Kuatkan pemahaman lewat diskusi refleksi, lalu ajukan pertanyaan lanjutan tentang sisa pembagian sebagai jembatan ke Fase B. Tutup dengan selebrasi bersama kelas.
+                <div class="t-qa"><span class="qg">Refleksi:</span> Mengapa membagi satu per satu secara bergiliran lebih adil daripada membagi asal-asalan? <span class="ag">→ Karena tiap piring pasti mendapat jumlah yang sama, tidak ada yang lebih banyak atau sedikit.</span></div>
+                <div class="t-qa"><span class="qg">Pengayaan:</span> Jika 13 kue dibagi 4 piring, apa yang terjadi? <span class="ag">→ Tiap piring dapat 3 kue, sisa 1 kue di toples (pengenalan awal konsep sisa pembagian).</span></div></div>`,
+            6: `<div class="t-block">Kuis cek pemahaman berisi 3 soal yang muncul bergantian; siswa harus menjawab benar soal saat ini sebelum soal berikutnya muncul. Soal 1 menguatkan konsep pembagian rata (partitive division) dalam konteks kue-piring. Soal 2 mengubah konteks menjadi soal pengelompokan (grouping) mainan-keranjang. Soal 3 memperkenalkan konsep sisa pembagian secara konkret.
+                <div class="t-qa"><span class="qg">Perhatikan:</span> Jika jawaban salah, opsi tersebut berkedip merah sesaat lalu siswa dapat mencoba lagi hingga menemukan jawaban yang benar; jawaban benar tidak langsung ditampilkan agar siswa tetap berpikir.</div></div>`
+        };
+        function updateTeacherPanel(n) {
+            document.getElementById('teacher-step').innerHTML = TEACHER_NOTES[n] || TEACHER_NOTES[1];
+        }
+        function openTeacher() {
+            document.getElementById('scrim').classList.add('open');
+            document.getElementById('drawer').classList.add('open');
+        }
+        function closeTeacher() {
+            document.getElementById('scrim').classList.remove('open');
+            document.getElementById('drawer').classList.remove('open');
+        }
+        document.getElementById('open-teacher').onclick = openTeacher;
+
+        function loadLevel() {
+            const level = document.getElementById('level-select').value;
+            if(level == 1) { totalCookies = 9; totalPlates = 3; }
+            else if(level == 2) { totalCookies = 12; totalPlates = 4; }
+            else if(level == 3) { totalCookies = 15; totalPlates = 5; }
+            else if(level == 4) { totalCookies = 20; totalPlates = 5; }
+            resetGame();
+        }
+
+        function resetGame() {
+            const jar = document.getElementById('cookie-jar');
+            const platesArea = document.getElementById('plates-area');
+            
+            jar.innerHTML = '<div class="jar-label" id="jar-count"></div>';
+            platesArea.innerHTML = '';
+
+            // Sembunyikan feedback pembagian adil setiap kali level di-reset/diganti[cite: 1]
+            const feedbackEl = document.getElementById('level-feedback');
+            if (feedbackEl) {
+                feedbackEl.classList.remove('show');
+                feedbackEl.innerHTML = '';
+            }
+
+            for(let i = 1; i <= totalCookies; i++) {
+                const cookie = document.createElement('div');
+                cookie.className = 'cookie';
+                cookie.draggable = true;
+                cookie.id = `cookie-${i}`;
+                cookie.ondragstart = drag;
+                jar.appendChild(cookie);
+            }
+
+            for(let p = 1; p <= totalPlates; p++) {
+                const plate = document.createElement('div');
+                plate.className = 'plate';
+                plate.id = `plate-${p}`;
+                plate.ondrop = drop;
+                plate.ondragover = allowDrop;
+                plate.innerHTML = `<div class="plate-label">Piring ${p}</div>`;
+                platesArea.appendChild(plate);
+            }
+
+            updateCounts();
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const cookieEl = document.getElementById(data);
+            let target = ev.target;
+            
+            if (!target.classList.contains('plate') && !target.classList.contains('jar-container')) {
+                target = target.closest('.plate') || target.closest('.jar-container');
+            }
+            if (target) {
+                target.appendChild(cookieEl);
+                updateCounts();
+            }
+        }
+
+        function updateCounts() {
+            const jarCookies = document.getElementById('cookie-jar').getElementsByClassName('cookie').length;
+            document.getElementById('jar-count').innerText = `Toples (${jarCookies})`;
+
+            const plateCounts = [];
+            document.querySelectorAll('.plate').forEach((plate, idx) => {
+                const count = plate.getElementsByClassName('cookie').length;
+                plate.querySelector('.plate-label').innerText = `Piring ${idx + 1} (${count})`;
+                plateCounts.push(count);
+            });
+
+            checkFairShare(jarCookies, plateCounts);
+        }
+
+        // Tampilkan feedback singkat ketika kue sudah terbagi adil ke semua piring[cite: 1]
+        function checkFairShare(jarCookies, plateCounts) {
+            const feedbackEl = document.getElementById('level-feedback');
+            if (!feedbackEl) return;
+
+            const allEqual = plateCounts.length > 0 && plateCounts.every(c => c === plateCounts[0]);
+            const isFair = jarCookies === 0 && allEqual && plateCounts[0] > 0;
+
+            if (isFair) {
+                feedbackEl.innerHTML = `🎉 Hore! Kue sudah terbagi adil, setiap piring dapat <strong>${plateCounts[0]}</strong> kue!`;
+                feedbackEl.classList.add('show');
+            } else {
+                feedbackEl.classList.remove('show');
+                feedbackEl.innerHTML = '';
+            }
+        }
+
+        function triggerCelebration() {
+            document.getElementById('celebration-box').classList.add('show');
+        }
+
+        /* ===================== REVEAL SATU PER SATU (Langkah 1 & 5) ===================== */
+        function initSequentialReveal(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const items = Array.from(container.querySelectorAll('.seq-reveal-item'));
+
+            items.forEach((item, idx) => {
+                if (idx === 0) item.classList.add('show');
+                if (idx === items.length - 1) item.classList.add('last-item');
+
+                item.addEventListener('click', () => {
+                    if (!item.classList.contains('show') || item.classList.contains('opened')) return;
+                    item.classList.add('opened');
+                    const next = items[idx + 1];
+                    if (next) next.classList.add('show');
+                });
+            });
+        }
+
+        // Reveal dua tahap: klik pertama menampilkan jawaban, klik kedua lanjut ke pertanyaan berikutnya (Langkah 5)[cite: 1]
+        function initQAReveal(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const items = Array.from(container.querySelectorAll('.qa-reveal-item'));
+
+            items.forEach((item, idx) => {
+                if (idx === 0) item.classList.add('show');
+                if (idx === items.length - 1) item.classList.add('last-item');
+
+                item.addEventListener('click', () => {
+                    if (!item.classList.contains('show') || item.classList.contains('opened')) return;
+
+                    if (!item.classList.contains('answered')) {
+                        // Tahap 1: tampilkan jawaban[cite: 1]
+                        item.classList.add('answered');
+                        const answerEl = item.querySelector('.qa-answer');
+                        if (answerEl) answerEl.classList.add('show');
+                        if (item.classList.contains('last-item')) {
+                            item.classList.add('opened'); // tidak ada pertanyaan berikutnya[cite: 1]
+                        }
+                        return;
+                    }
+
+                    // Tahap 2: lanjut ke pertanyaan berikutnya[cite: 1]
+                    item.classList.add('opened');
+                    const next = items[idx + 1];
+                    if (next) next.classList.add('show');
+                });
+            });
+        }
+
+        /* ===================== ZOOM & PAN GAMBAR (Langkah 2) ===================== */
+        const zoomPanInstances = {};
+
+        function initZoomPan(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const inner = container.querySelector('.zoom-pan-inner');
+
+            const minScale = 1, maxScale = 4;
+            let scale = 1, posX = 0, posY = 0;
+            let isDragging = false, startX = 0, startY = 0;
+            let lastTouchDist = null, lastTouchMid = null;
+
+            function applyTransform() {
+                inner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            }
+
+            function clampPosition() {
+                const rect = container.getBoundingClientRect();
+                const maxX = (rect.width * (scale - 1)) / 2 + rect.width * 0.5;
+                const maxY = (rect.height * (scale - 1)) / 2 + rect.height * 0.5;
+                posX = Math.max(-maxX, Math.min(maxX, posX));
+                posY = Math.max(-maxY, Math.min(maxY, posY));
+            }
+
+            function setScale(newScale, originX, originY) {
+                newScale = Math.max(minScale, Math.min(maxScale, newScale));
+                const rect = container.getBoundingClientRect();
+                const cx = originX - rect.left - rect.width / 2;
+                const cy = originY - rect.top - rect.height / 2;
+                const ratio = newScale / scale;
+                posX = cx - (cx - posX) * ratio;
+                posY = cy - (cy - posY) * ratio;
+                scale = newScale;
+                if (scale === minScale) { posX = 0; posY = 0; }
+                clampPosition();
+                applyTransform();
+            }
+
+            // --- Zoom via scroll wheel (komputer) ---
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 0.15 : -0.15;
+                setScale(scale + delta, e.clientX, e.clientY);
+            }, { passive: false });
+
+            // --- Pan via drag mouse (komputer) ---
+            container.addEventListener('mousedown', (e) => {
+                if (scale <= minScale) return;
+                isDragging = true;
+                container.classList.add('grabbing');
+                startX = e.clientX - posX;
+                startY = e.clientY - posY;
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                posX = e.clientX - startX;
+                posY = e.clientY - startY;
+                clampPosition();
+                applyTransform();
+            });
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.classList.remove('grabbing');
+            });
+
+            // --- Zoom & pan dua jari (mobile) ---
+            function touchDist(t) {
+                const dx = t[0].clientX - t[1].clientX;
+                const dy = t[0].clientY - t[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            function touchMid(t) {
+                return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 };
+            }
+
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1 && scale > minScale) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - posX;
+                    startY = e.touches[0].clientY - posY;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    lastTouchDist = touchDist(e.touches);
+                    lastTouchMid = touchMid(e.touches);
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging) {
+                    e.preventDefault();
+                    posX = e.touches[0].clientX - startX;
+                    posY = e.touches[0].clientY - startY;
+                    clampPosition();
+                    applyTransform();
+                } else if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const newDist = touchDist(e.touches);
+                    const mid = touchMid(e.touches);
+                    if (lastTouchDist) setScale(scale * (newDist / lastTouchDist), mid.x, mid.y);
+                    if (lastTouchMid) {
+                        posX += mid.x - lastTouchMid.x;
+                        posY += mid.y - lastTouchMid.y;
+                        clampPosition();
+                        applyTransform();
+                    }
+                    lastTouchDist = newDist;
+                    lastTouchMid = mid;
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) lastTouchDist = null;
+                if (e.touches.length === 0) isDragging = false;
+            });
+
+            zoomPanInstances[containerId] = {
+                reset: () => { scale = 1; posX = 0; posY = 0; applyTransform(); }
+            };
+        }
+
+        function zoomPanReset(containerId) {
+            if (zoomPanInstances[containerId]) zoomPanInstances[containerId].reset();
+        }
+
+        /* ===================== FEEDBACK PILIHAN GAMBAR (Langkah 2) ===================== */
+        function initClueChoices() {
+            const container = document.getElementById('clueChoices');
+            if (!container) return;
+            const items = Array.from(container.querySelectorAll('.clue-item'));
+            let clearTimer = null;
+
+            items.forEach((item) => {
+                item.addEventListener('click', () => {
+                    const isCorrect = item.dataset.choice === 'correct';
+
+                    items.forEach((el) => el.classList.remove('chosen-correct', 'chosen-wrong'));
+                    if (clearTimer) clearTimeout(clearTimer);
+
+                    // Trigger reflow supaya animasi bisa terulang walau class-nya sama seperti sebelumnya[cite: 1]
+                    void item.offsetWidth;
+
+                    item.classList.add(isCorrect ? 'chosen-correct' : 'chosen-wrong');
+
+                    clearTimer = setTimeout(() => {
+                        item.classList.remove('chosen-correct', 'chosen-wrong');
+                    }, 2000);
+                });
+            });
+        }
+
+        /* ===================== KUIS CEK PEMAHAMAN (Langkah 6) ===================== */
+        function initQuiz() {
+            const quizItems = Array.from(document.querySelectorAll('#step-6 .quiz-item'));
+
+            quizItems.forEach((item, idx) => {
+                if (idx === 0) item.classList.add('show');
+
+                const correctAnswer = item.dataset.answer;
+                const correctFeedback = item.dataset.feedback || '🎉 Benar sekali! Kerja bagus!';
+                const feedbackEl = item.querySelector('.quiz-feedback');
+                const optionBtns = Array.from(item.querySelectorAll('.quiz-option'));
+
+                optionBtns.forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        if (item.classList.contains('answered')) return; // soal ini sudah terjawab benar[cite: 1]
+                        if (btn.disabled) return; // sedang berkedip / dikunci sementara[cite: 1]
+
+                        const isCorrect = btn.dataset.value === correctAnswer;
+
+                        if (isCorrect) {
+                            item.classList.add('answered');
+                            optionBtns.forEach((b) => b.disabled = true);
+                            btn.classList.add('correct');
+
+                            feedbackEl.innerHTML = correctFeedback;
+                            feedbackEl.classList.remove('feedback-wrong');
+                            feedbackEl.classList.add('show', 'feedback-correct');
+
+                            const next = quizItems[idx + 1];
+                            if (next) {
+                                setTimeout(() => next.classList.add('show'), 600);
+                            } else {
+                                const quizDone = document.getElementById('quiz-complete');
+                                if (quizDone) setTimeout(() => quizDone.classList.add('show'), 600);
+                            }
+                        } else {
+                            // Jawaban salah: beri kedip merah sesaat, lalu biarkan siswa mencoba lagi[cite: 1]
+                            btn.disabled = true;
+                            btn.classList.remove('wrong');
+                            void btn.offsetWidth; // reset animasi supaya bisa berkedip lagi tiap klik[cite: 1]
+                            btn.classList.add('wrong');
+
+                            feedbackEl.innerHTML = '💡 Belum tepat, coba lagi ya!';
+                            feedbackEl.classList.remove('feedback-correct');
+                            feedbackEl.classList.add('show', 'feedback-wrong');
+
+                            setTimeout(() => {
+                                btn.classList.remove('wrong');
+                                btn.disabled = false;
+                            }, 800);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Fungsi untuk toggle mute/unmute video[cite: 1]
+        function toggleMute() {
+            if (!videoElement) return;
+            videoElement.muted = !videoElement.muted;
+            const btn = document.getElementById('muteToggle');
+            btn.textContent = videoElement.muted ? '🔊 Buka suara' : '🔇 Matikan suara';
+        }
+
+        // Inisialisasi: cari video dan simpan referensi[cite: 1]
+        window.onload = function() {
+            loadLevel();
+            updateTeacherPanel(1);
+            initQAReveal('step1-questions');
+            initQAReveal('step5-reflections');
+            initZoomPan('kokoImageZoom');
+            initClueChoices();
+            initQuiz();
+            videoElement = document.getElementById('introVideo');
+            if (videoElement) {
+                videoElement.muted = true; // pastikan mute saat load[cite: 1]
+                // Coba putar otomatis (autoplay sudah diset)[cite: 1]
+                videoElement.play().catch(e => console.log('Autoplay ditahan oleh browser'));
+            }
+        };
+    </script>
 </body>
 </html>
