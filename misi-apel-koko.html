@@ -37,6 +37,7 @@ h1{color:var(--pc);margin:0;font-size:1.3rem}h2{color:var(--pc);font-size:1.1rem
 .ghost{position:fixed!important;z-index:3000;pointer-events:none;transform:scale(1.25)}
 .ground{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:10px;background:#c8e6c9;border-radius:12px;margin-top:12px;min-height:58px}
 .baskets{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:20px}
+#g4{margin-top:16px}
 .bsk{flex:1 1 90px;max-width:140px;border:3px solid #8d6e63;border-radius:6px 6px 26px 26px;background:#ffe0b2;padding:2px 2px 6px;text-align:center;animation:pop .3s}
 .bsk .in{display:flex;flex-wrap:wrap;gap:1px;justify-content:center;align-content:flex-end;min-height:84px;padding:4px}
 .bsk .in .item{width:30px;height:30px;cursor:default}.bsk .in .item::after{font-size:24px}
@@ -51,7 +52,13 @@ h1{color:var(--pc);margin:0;font-size:1.3rem}h2{color:var(--pc);font-size:1.1rem
 .choices{display:flex;flex-direction:column;gap:10px;margin:10px 0}
 .ch{border:2px solid var(--bd);border-radius:14px;padding:12px;font-size:1rem;background:#fff;text-align:left;cursor:pointer;min-height:56px}
 .ch b{display:inline-block;background:#1e88e5;color:#fff;border-radius:8px;padding:2px 9px;margin-right:6px}.ch.a b{background:var(--ac)}
-.ch.good{border-color:#4caf50;background:#e8f5e9;animation:pop .4s}.ch.bad{border-color:#e53935;background:#ffebee;animation:shake .4s}
+.ch.good{border-color:#4caf50;background:#e8f5e9;animation:pop .4s}
+#o3 .ch{position:relative;padding-right:48px}
+#o3 .ch::after{content:'';position:absolute;right:12px;top:50%;width:24px;height:24px;margin-top:-12px;border:2px solid #bcaaa4;border-radius:6px;background:#fff;color:#fff;font-weight:700;font-size:1rem;line-height:20px;text-align:center}
+#o3 .ch.sel{border-color:#1e88e5;background:#e3f2fd}
+#o3 .ch.sel::after{content:'✓';background:#1e88e5;border-color:#1e88e5}
+#o3 .ch.good{border-color:#4caf50;background:#e8f5e9}
+#o3 .ch.good::after{content:'✓';background:#4caf50;border-color:#4caf50}.ch.bad{border-color:#e53935;background:#ffebee;animation:shake .4s}
 .eq{display:flex;justify-content:center;align-items:center;gap:8px;font-size:1.7rem;font-weight:700;color:var(--pc);flex-wrap:wrap;margin:10px 0}
 .eq .box,.eq input{min-width:56px;height:52px;border:2px dashed #ab9086;border-radius:10px;background:#faf3ef;text-align:center;font-size:1.6rem;font-weight:700;color:var(--pc);display:inline-flex;align-items:center;justify-content:center;padding:0 6px;width:76px}
 .eq input:focus{outline:3px solid #ffcc80;border-style:solid}
@@ -167,10 +174,10 @@ h1{color:var(--pc);margin:0;font-size:1.3rem}h2{color:var(--pc);font-size:1.1rem
 <div class="step" id="step-6">
  <h2>🧠 Uji Pemahaman</h2>
  <div class="mc" data-f="✅ 5 + 5 + 5 = 15 atau 3 × 5 = 15." data-next="u2"><b>Uji 1.</b> Koko berhasil mengisi 3 keranjang. Setiap keranjang berisi 5 apel. Berapa jumlah semua apel Koko?
-  <div class="choices"><button class="ch a"><b>A</b> 7</button><button class="ch" data-ok="1"><b>B</b> 15</button><button class="ch a"><b>C</b> 16</button></div><div class="fb"></div></div>
+  <div class="choices"><button class="ch"><b>A</b> 7</button><button class="ch" data-ok="1"><b>B</b> 15</button><button class="ch"><b>C</b> 16</button></div><div class="fb"></div></div>
  <div class="mc hide" id="u2" data-f="✅ Ada 5 kelompok (keranjang) dan setiap kelompok berisi 4 apel: 5 × 4 = 20." data-next="u3"><b>Uji 2.</b> Perhatikan susunan berikut. Manakah kalimat perkalian yang tepat?
   <div class="lines" id="v62"></div>
-  <div class="choices"><button class="ch" data-ok="1"><b>A</b> 5 × 4 = 20</button><button class="ch a"><b>B</b> 4 × 5 = 20</button><button class="ch a"><b>C</b> 5 + 4 = 9</button></div><div class="fb"></div></div>
+  <div class="choices"><button class="ch" data-ok="1"><b>A</b> 5 × 4 = 20</button><button class="ch"><b>B</b> 4 × 5 = 20</button><button class="ch"><b>C</b> 5 + 4 = 9</button></div><div class="fb"></div></div>
  <div class="mc hide" id="u3"><b>Uji 3.</b> Koko membantu Mimi menyusun jeruk. Mimi memiliki 4 keranjang, dan setiap keranjang berisi 6 jeruk. Pilih <u>semua</u> pernyataan yang benar:
   <div class="lines" id="v63"></div>
   <div class="choices" id="o3">
@@ -305,13 +312,17 @@ build4(0);
 qa('.mc[data-f]').forEach(m=>{const f=m.querySelector('.fb');qa('.ch',m).forEach(b=>b.onclick=()=>{if(m.dataset.done)return;
  if(b.dataset.ok){b.classList.add('good');m.dataset.done=1;fbx(f,1,m.dataset.f);fanfare();const n=$(m.dataset.next);if(n){n.classList.remove('hide');n.classList.add('show')}}
  else{b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500);fbx(f,0,'Coba lagi, pikirkan baik-baik. 🤔')}})});
-/* Uji 3: pilih banyak */
-qa('#o3 .ch').forEach(b=>b.onclick=()=>b.classList.toggle('sel'));
-$('chk6').onclick=()=>{const bs=qa('#o3 .ch'),pick=bs.filter(b=>b.classList.contains('sel'));
- const hit=pick.filter(b=>b.dataset.ok).length,ex=pick.length-hit;
- if(hit==3&&!ex){bs.forEach(b=>b.dataset.ok&&b.classList.add('good'));fbx($('fb6'),1,'🎉 Hebat! Kamu memahami bahwa perkalian adalah cara untuk menghitung beberapa kelompok yang sama banyak.');$('chk6').disabled=true;fanfare();confetti()}
- else if(hit)fbx($('fb6'),0,'👍 Bagus! Coba periksa kembali pernyataan yang menjelaskan jumlah kelompok dan isi setiap kelompok.');
- else fbx($('fb6'),0,'🤔 Perhatikan lagi: ada berapa keranjang? Berapa jeruk di setiap keranjang? Coba tuliskan sebagai penjumlahan berulang.')};
+/* Uji 3: pilih lebih dari satu jawaban */
+{const m=$('u3'),bs=qa('#o3 .ch'),fb=$('fb6'),need=bs.filter(b=>b.dataset.ok).length;
+ bs.forEach(b=>{b.setAttribute('aria-pressed','false');
+  b.onclick=()=>{if(m.dataset.done)return;const on=b.classList.toggle('sel');b.setAttribute('aria-pressed',on);fb.className='fb'}});
+ $('chk6').onclick=()=>{if(m.dataset.done)return;
+  const pick=bs.filter(b=>b.classList.contains('sel')),hit=pick.filter(b=>b.dataset.ok).length,ex=pick.length-hit;
+  if(!pick.length)return fbx(fb,0,'☝️ Pilih dulu pernyataan yang menurutmu benar. Boleh lebih dari satu.');
+  if(hit==need&&!ex){m.dataset.done=1;bs.forEach(b=>b.dataset.ok&&b.classList.add('good'));$('chk6').disabled=true;
+   fbx(fb,1,'🎉 Hebat! Kamu memahami bahwa perkalian adalah cara untuk menghitung beberapa kelompok yang sama banyak. 4 keranjang berisi 6 jeruk: 6 + 6 + 6 + 6 = 24, ditulis 4 × 6 = 24.');fanfare();confetti()}
+  else if(ex)fbx(fb,0,(hit?'👍 Sebagian pilihanmu sudah benar, tetapi ':'🤔 ')+'ada pilihan yang belum tepat. Perhatikan lagi: ada berapa keranjang? Berapa jeruk di setiap keranjang? Coba tuliskan sebagai penjumlahan berulang.');
+  else fbx(fb,0,'👍 Pilihanmu sudah benar, tetapi masih ada pernyataan benar lain yang belum kamu pilih. Coba periksa lagi.')}}
 /* Selebrasi & sertifikat */
 new MutationObserver(()=>{if($('cel').classList.contains('show')&&!$('cel').dataset.f){$('cel').dataset.f=1;confetti()}}).observe($('cel'),{attributes:true});
 $('dl').onclick=()=>{const c=document.createElement('canvas');c.width=1000;c.height=700;const x=c.getContext('2d');
